@@ -6,14 +6,14 @@
 <meta name="theme-color" content="#000000">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="rssonate">
-<title>Rssonate</title>
+<meta name="apple-mobile-web-app-title" content="Rssonate">
+<title>Rssonate News Reader</title>
 <link rel="icon" type="image/svg+xml" href="icon.svg">
 <link rel="icon" type="image/png" href="apple.png">
 <link rel="apple-touch-icon" href="apple.png">
 <link rel="mask-icon" href="icon.svg" color="#f36523">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://fonts.gRssonateom" crossorigin>
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;600&family=Instrument+Serif:ital@1&display=swap">
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;600&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet">
 <style>
@@ -148,7 +148,10 @@
     left: 0;
     right: 0;
     z-index: 10;
-    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.4rem;
   }
   footer a {
     font-size: 0.85rem;
@@ -157,10 +160,16 @@
     text-decoration: none;
     pointer-events: auto;
     transition: color 0.4s ease;
-    padding: 10px;
+    padding: 0.25rem 1rem;
   }
   footer a:hover {
     color: var(--text-primary);
+  }
+  .legal {
+    font-size: 0.7rem;
+    letter-spacing: 0.02em;
+    color: rgba(255, 255, 255, 0.15);
+    pointer-events: none;
   }
 
   body.fonts-loaded .logo { animation: cinematicReveal 1.6s cubic-bezier(0.22, 1, 0.36, 1) 0.1s forwards; }
@@ -198,15 +207,16 @@
   <div class="vignette" aria-hidden="true"></div>
   <main>
     <div class="logo text-glow">
-      <img src="icon.svg" alt="rssonate">
+      <img src="icon.svg" alt="Rssonate">
       <div>rssonate<span>.</span></div>
     </div>
     <h1 class="text-glow">An RSS reader to<br><em>deprecate</em> them all.</h1>
-    <p class="sub text-glow">No noise. No manipulation. Zero bloat.</p>
+    <p class="sub text-glow">Private. Powerful. Personal.</p>
     <div class="status-badge text-glow">Coming Soon</div>
   </main>
   <footer>
     <a href="mailto:rssonate@proton.me">rssonate@proton.me</a>
+    <div class="legal">&copy; 2026 Rssonate.</div>
   </footer>
   <script>
     (() => {
@@ -423,4 +433,4 @@
     })();
   </script>
 </body>
-</html>
+  </html>
