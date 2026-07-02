@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#000000">
 <title>rssonate.</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22><circle cx=%2216%22 cy=%2216%22 r=%2212%22 fill=%22none%22 stroke=%22%23f5f5f7%22 stroke-width=%224%22/></svg>">
+<link rel="icon" type="image/svg+xml" href="icon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;600&family=Instrument+Serif:ital@1&display=swap">
@@ -69,17 +69,28 @@
   }
   .text-glow {
     text-shadow: 0 4px 24px rgba(0, 0, 0, 1), 0 2px 8px rgba(0, 0, 0, 0.6);
+    will-change: transform, opacity, filter;
   }
   .logo, h1, p.sub, .status-badge, footer {
     opacity: 0;
   }
   body.fonts-loaded .logo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.2rem;
     font-weight: 600;
     font-size: 1.1rem;
     letter-spacing: -0.04em;
     color: var(--text-primary);
     margin-bottom: 6vh;
     animation: cinematicReveal 1.6s cubic-bezier(0.22, 1, 0.36, 1) 0.2s forwards;
+  }
+  .logo img {
+    width: 52px;
+    height: 52px;
+    object-fit: contain;
+    filter: drop-shadow(0 4px 16px rgba(0, 0, 0, 0.8));
   }
   .logo span {
     color: var(--text-tertiary);
@@ -161,7 +172,10 @@
   <canvas id="resonance-field" aria-hidden="true"></canvas>
   <div class="vignette" aria-hidden="true"></div>
   <main>
-    <div class="logo text-glow">rssonate<span>.</span></div>
+    <div class="logo text-glow">
+      <img src="icon.svg" alt="rssonate">
+      <div>rssonate<span>.</span></div>
+    </div>
     <h1 class="text-glow">An RSS reader to<br><em>deprecate</em> them all.</h1>
     <p class="sub text-glow">No noise, no algorithm, no bloat.</p>
     <div class="status-badge text-glow">Coming Soon</div>
@@ -176,6 +190,8 @@
 
       let width, height;
       let strings = [];
+      let isVisible = true;
+      let animationFrameId;
       
       const NUM_STRINGS = 55;
       const RESOLUTION = 30;
@@ -227,7 +243,7 @@
             const p = pts[j];
             const dx = mouse.x - p.x;
             const dy = mouse.y - p.baseY;
-            const dist = Math.sqrt(dx * dx + dy * dy);
+            const dist = Math.hypot(dx, dy);
 
             if (dist < mouseRadius) {
               const force = (mouseRadius - dist) / mouseRadius;
@@ -290,6 +306,8 @@
       let accumulator = 0;
 
       const animate = (time) => {
+        if (!isVisible) return;
+        
         if (!lastTime) lastTime = time;
         let dt = time - lastTime;
         
@@ -306,7 +324,7 @@
         render();
         lastMouse.x = mouse.x;
         lastMouse.y = mouse.y;
-        requestAnimationFrame(animate);
+        animationFrameId = requestAnimationFrame(animate);
       };
 
       const resize = () => {
@@ -317,6 +335,7 @@
         canvas.height = height * dpr;
         ctx.scale(dpr, dpr);
         init();
+        if (!isVisible) render();
       };
 
       let resizeTimeout;
@@ -336,6 +355,16 @@
 
       const clearMouse = () => setMouseParams(-1000, -1000, true);
 
+      const handleVisibilityChange = () => {
+        isVisible = document.visibilityState === 'visible';
+        if (isVisible) {
+          lastTime = 0;
+          animationFrameId = requestAnimationFrame(animate);
+        } else {
+          cancelAnimationFrame(animationFrameId);
+        }
+      };
+
       window.addEventListener('mousemove', (e) => setMouseParams(e.clientX, e.clientY));
       window.addEventListener('touchstart', (e) => setMouseParams(e.touches[0].clientX, e.touches[0].clientY, true), { passive: true });
       window.addEventListener('touchmove', (e) => setMouseParams(e.touches[0].clientX, e.touches[0].clientY), { passive: true });
@@ -343,9 +372,10 @@
       window.addEventListener('touchend', clearMouse);
       window.addEventListener('touchcancel', clearMouse);
       window.addEventListener('resize', handleResize);
+      document.addEventListener('visibilitychange', handleVisibilityChange);
 
       resize();
-      requestAnimationFrame(animate);
+      animationFrameId = requestAnimationFrame(animate);
 
       const startApp = () => {
         document.body.classList.add('fonts-loaded');
