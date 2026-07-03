@@ -6,12 +6,11 @@
 <meta name="color-scheme" content="dark light">
 <meta name="theme-color" id="meta-theme-color" content="#000000">
 <meta name="description" content="A personal, cross-platform RSS reader designed for focus. Coming soon.">
-<meta name="robots" content="index, follow">
 <meta property="og:title" content="Rssonate | Private & Powerful RSS Reader">
 <meta property="og:description" content="A personal, cross-platform RSS reader designed for focus. Coming soon.">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://rssonate.com/">
-<meta property="og:image" content="https://rssonate.com/preview.jpg">
+<meta property="og:url" content="https://rssonate.github.io/">
+<meta property="og:image" content="https://rssonate.github.io/preview.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="Rssonate App Interface Preview">
@@ -19,19 +18,17 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Rssonate | Private & Powerful RSS Reader">
 <meta name="twitter:description" content="A personal, cross-platform RSS reader designed for focus. Coming soon.">
-<meta name="twitter:image" content="https://rssonate.com/preview.jpg">
+<meta name="twitter:image" content="https://rssonate.github.io/preview.jpg">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Rssonate">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'self' 'unsafe-inline'; img-src 'self' data: https://rssonate.com;">
-<meta http-equiv="X-Content-Type-Options" content="nosniff">
-<meta http-equiv="Permissions-Policy" content="interest-cohort=()">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'self' 'unsafe-inline'; img-src 'self' data:;">
 <title>Rssonate | Private & Powerful RSS Reader</title>
 <link rel="icon" type="image/svg+xml" href="icon.svg">
 <link rel="icon" type="image/png" href="apple.png">
 <link rel="apple-touch-icon" href="apple.png">
 <link rel="mask-icon" href="icon.svg" color="#f36523">
-<link rel="canonical" href="https://rssonate.com/">
+<link rel="canonical" href="https://rssonate.github.io/">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;600&family=Instrument+Serif:ital@1&display=swap">
@@ -76,7 +73,7 @@
     margin: 0;
     padding: 0;
     width: 100%;
-    height: 100%;
+    min-height: 100dvh;
     background: var(--bg);
     color: var(--text-primary);
     font-family: 'Geist', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -98,7 +95,7 @@
     opacity: 0;
     transition: opacity 3s var(--theme-ease);
   }
-  body.fonts-loaded #resonance-field {
+  body.ready #resonance-field {
     opacity: 1;
   }
   .vignette {
@@ -169,20 +166,21 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    font-size: clamp(44px, 6vw, 72px);
   }
   .logo-icon::before {
     content: '';
     position: absolute;
     inset: -55%;
     background: radial-gradient(circle, var(--icon-halo) 0%, transparent 70%);
-    filter: blur(18px);
+    filter: blur(0.25em);
     z-index: -1;
     animation: haloPulse 6s ease-in-out 1.8s infinite alternate;
     transition: background var(--theme-duration) var(--theme-ease);
   }
   .logo img {
-    width: clamp(44px, 6vw, 72px);
-    height: clamp(44px, 6vw, 72px);
+    width: 1em;
+    height: 1em;
     object-fit: contain;
     will-change: transform, filter;
     filter: drop-shadow(0 4px 24px rgba(243, 101, 35, 0.15)) drop-shadow(0 0 8px rgba(255, 200, 67, 0.05));
@@ -261,12 +259,19 @@
     opacity: 0.6;
     pointer-events: none;
   }
-  body.fonts-loaded .logo { animation: cinematicReveal 1.6s var(--theme-ease) 0.1s forwards; }
-  body.fonts-loaded h1 { animation: cinematicReveal 1.6s var(--theme-ease) 0.25s forwards; }
-  body.fonts-loaded p.sub { animation: cinematicReveal 1.6s var(--theme-ease) 0.4s forwards; }
-  body.fonts-loaded .status-badge { animation: cinematicReveal 1.6s var(--theme-ease) 0.55s forwards; }
-  body.fonts-loaded footer { animation: cinematicReveal 1.6s var(--theme-ease) 0.7s forwards; }
-  body.fonts-loaded .theme-toggle { animation: cinematicReveal 1.6s var(--theme-ease) 0.85s forwards; }
+  body.ready .logo { animation: cinematicReveal 1.6s var(--theme-ease) 0.1s forwards; }
+  body.ready h1 { animation: cinematicReveal 1.6s var(--theme-ease) 0.25s forwards; }
+  body.ready p.sub { animation: cinematicReveal 1.6s var(--theme-ease) 0.4s forwards; }
+  body.ready .status-badge { animation: cinematicReveal 1.6s var(--theme-ease) 0.55s forwards; }
+  body.ready footer { animation: cinematicReveal 1.6s var(--theme-ease) 0.7s forwards; }
+  body.ready .theme-toggle { animation: cinematicReveal 1.6s var(--theme-ease) 0.85s forwards; }
+  
+  @media (max-height: 500px) {
+    body { overflow-y: auto; }
+    main { height: auto; min-height: 100dvh; padding: 12vh 5vw 15vh 5vw; }
+    footer { position: absolute; bottom: 1.5rem; }
+  }
+
   @keyframes cinematicReveal {
     0% { opacity: 0; filter: blur(12px); transform: translateY(16px) scale(0.98); }
     100% { opacity: 1; filter: blur(0); transform: translateY(0) scale(1); }
@@ -280,15 +285,8 @@
     100% { opacity: 1; transform: scale(1.1); }
   }
   @media (prefers-reduced-motion: reduce) {
-    .logo img, .logo-icon::before {
-      animation: none;
-    }
-    body.fonts-loaded .logo,
-    body.fonts-loaded h1,
-    body.fonts-loaded p.sub,
-    body.fonts-loaded .status-badge,
-    body.fonts-loaded footer,
-    body.fonts-loaded .theme-toggle {
+    .logo img, .logo-icon::before { animation: none; }
+    body.ready .logo, body.ready h1, body.ready p.sub, body.ready .status-badge, body.ready footer, body.ready .theme-toggle {
       animation: none;
       opacity: 1;
     }
@@ -325,8 +323,7 @@
     (() => {
       const themeToggleBtn = document.getElementById('theme-toggle');
       const metaThemeColor = document.getElementById('meta-theme-color');
-      let tR = 255, tG = 250, tB = 245;
-      let cR = 255, cG = 250, cB = 245;
+      let tR = 255, tG = 250, tB = 245, cR = 255, cG = 250, cB = 245;
 
       const applyThemeVars = (theme) => {
         const isDark = theme === 'dark';
@@ -356,28 +353,15 @@
       const canvas = document.getElementById('resonance-field');
       const ctx = canvas.getContext('2d', { alpha: true });
 
-      let width, height;
-      let strings = [];
-      let isVisible = true;
-      let animationFrameId;
-      const NUM_STRINGS = 55;
-      const RESOLUTION = 30;
-      const TENSION = 0.035;
-      const DAMPING = 0.92;
-      const SPREAD = 0.15;
-      const MOUSE_FORCE = 4.0;
-      const PHYSICS_STEP = 1000 / 120;
-
+      let width, height, strings = [], animationFrameId, resizeTimeout;
+      let isVisible = true, isSleeping = false;
+      const NUM_STRINGS = 55, RESOLUTION = 30, TENSION = 0.035, DAMPING = 0.92, SPREAD = 0.15, MOUSE_FORCE = 4.0, PHYSICS_STEP = 1000 / 120;
       let mouseRadius = 150;
-      const mouse = { x: -1000, y: -1000 };
-      const lastMouse = { x: -1000, y: -1000 };
+      const mouse = { x: -1000, y: -1000 }, lastMouse = { x: -1000, y: -1000 };
 
       class StringPoint {
         constructor(x, y) {
-          this.x = x;
-          this.baseY = y;
-          this.y = y;
-          this.vy = 0;
+          this.x = x; this.baseY = y; this.y = y; this.vy = 0;
         }
       }
 
@@ -388,39 +372,35 @@
         mouseRadius = Math.max(Math.min(width, height) * 0.2, 120);
         for (let i = 0; i < NUM_STRINGS; i++) {
           const pts = [];
-          const yPos = i * spacingY;
-          for (let j = 0; j < numPoints; j++) {
-            pts.push(new StringPoint(j * RESOLUTION - RESOLUTION, yPos));
-          }
-          strings.push({
-            points: pts,
-            leftDeltas: new Float32Array(numPoints),
-            rightDeltas: new Float32Array(numPoints)
-          });
+          for (let j = 0; j < numPoints; j++) pts.push(new StringPoint(j * RESOLUTION - RESOLUTION, i * spacingY));
+          strings.push({ points: pts, leftDeltas: new Float32Array(numPoints), rightDeltas: new Float32Array(numPoints) });
+        }
+      };
+
+      const wakePhysics = () => {
+        if (isSleeping) {
+          isSleeping = false;
+          lastTime = performance.now();
+          animationFrameId = requestAnimationFrame(animate);
         }
       };
 
       const updatePhysics = () => {
+        let maxV = 0;
         for (let i = 0; i < strings.length; i++) {
           const pts = strings[i].points;
           for (let j = 0; j < pts.length; j++) {
             const p = pts[j];
-            const dx = mouse.x - p.x;
-            const dy = mouse.y - p.baseY;
-            const dist = Math.hypot(dx, dy);
-
+            const dist = Math.hypot(mouse.x - p.x, mouse.y - p.baseY);
             if (dist < mouseRadius) {
               const force = (mouseRadius - dist) / mouseRadius;
-              let mouseSpeedY = mouse.y - lastMouse.y;
-              mouseSpeedY = Math.max(-20, Math.min(20, mouseSpeedY));
-              if (Math.abs(mouseSpeedY) > 0.5) {
-                p.vy += (mouseSpeedY * force * 0.15);
-              } else {
-                p.vy += (dy > 0 ? -1 : 1) * force * MOUSE_FORCE * 0.15;
-              }
+              let mouseSpeedY = Math.max(-20, Math.min(20, mouse.y - lastMouse.y));
+              if (Math.abs(mouseSpeedY) > 0.5) p.vy += (mouseSpeedY * force * 0.15);
+              else p.vy += ((mouse.y - p.baseY) > 0 ? -1 : 1) * force * MOUSE_FORCE * 0.15;
             }
             p.vy -= (p.y - p.baseY) * TENSION;
             p.vy *= DAMPING;
+            if (Math.abs(p.vy) > maxV) maxV = Math.abs(p.vy);
           }
         }
         for (let i = 0; i < strings.length; i++) {
@@ -437,13 +417,12 @@
             }
           }
         }
+        if (maxV < 0.02 && mouse.x === -1000) isSleeping = true;
       };
 
       const render = () => {
         ctx.clearRect(0, 0, width, height);
-        cR += (tR - cR) * 0.015;
-        cG += (tG - cG) * 0.015;
-        cB += (tB - cB) * 0.015;
+        cR += (tR - cR) * 0.015; cG += (tG - cG) * 0.015; cB += (tB - cB) * 0.015;
         ctx.strokeStyle = `rgba(${Math.round(cR)}, ${Math.round(cG)}, ${Math.round(cB)}, 0.08)`;
         ctx.lineWidth = 1.5;
         for (let i = 0; i < strings.length; i++) {
@@ -451,21 +430,17 @@
           ctx.beginPath();
           ctx.moveTo(pts[0].x, pts[0].y);
           for (let j = 1; j < pts.length - 1; j++) {
-            const xc = (pts[j].x + pts[j + 1].x) / 2;
-            const yc = (pts[j].y + pts[j + 1].y) / 2;
-            ctx.quadraticCurveTo(pts[j].x, pts[j].y, xc, yc);
+            ctx.quadraticCurveTo(pts[j].x, pts[j].y, (pts[j].x + pts[j + 1].x) / 2, (pts[j].y + pts[j + 1].y) / 2);
           }
           ctx.lineTo(pts[pts.length - 1].x, pts[pts.length - 1].y);
           ctx.stroke();
         }
       };
 
-      let lastTime = 0;
-      let accumulator = 0;
+      let lastTime = performance.now(), accumulator = 0;
 
       const animate = (time) => {
-        if (!isVisible) return;
-        if (!lastTime) lastTime = time;
+        if (!isVisible || isSleeping) return;
         let dt = time - lastTime;
         if (dt > 100) dt = PHYSICS_STEP;
         lastTime = time;
@@ -475,48 +450,26 @@
           accumulator -= PHYSICS_STEP;
         }
         render();
-        lastMouse.x = mouse.x;
-        lastMouse.y = mouse.y;
+        lastMouse.x = mouse.x; lastMouse.y = mouse.y;
         animationFrameId = requestAnimationFrame(animate);
       };
 
       const resize = () => {
         const dpr = window.devicePixelRatio || 1;
-        width = window.innerWidth;
-        height = window.innerHeight;
-        canvas.width = width * dpr;
-        canvas.height = height * dpr;
+        width = window.innerWidth; height = window.innerHeight;
+        canvas.width = width * dpr; canvas.height = height * dpr;
         ctx.scale(dpr, dpr);
         init();
-        if (!isVisible) render();
-      };
-
-      let resizeTimeout;
-      const handleResize = () => {
-        clearTimeout(resizeTimeout);
-        resizeTimeout = setTimeout(resize, 150);
+        if (!isVisible || isSleeping) render();
       };
 
       const setMouseParams = (x, y, isStart = false) => {
-        if (isStart) {
-          lastMouse.x = x;
-          lastMouse.y = y;
-        }
-        mouse.x = x;
-        mouse.y = y;
+        if (isStart) { lastMouse.x = x; lastMouse.y = y; }
+        mouse.x = x; mouse.y = y;
+        wakePhysics();
       };
 
       const clearMouse = () => setMouseParams(-1000, -1000, true);
-
-      const handleVisibilityChange = () => {
-        isVisible = document.visibilityState === 'visible';
-        if (isVisible) {
-          lastTime = 0;
-          animationFrameId = requestAnimationFrame(animate);
-        } else {
-          cancelAnimationFrame(animationFrameId);
-        }
-      };
 
       window.addEventListener('mousemove', (e) => setMouseParams(e.clientX, e.clientY));
       window.addEventListener('touchstart', (e) => setMouseParams(e.touches[0].clientX, e.touches[0].clientY, true), { passive: true });
@@ -524,30 +477,36 @@
       window.addEventListener('mouseleave', clearMouse);
       window.addEventListener('touchend', clearMouse);
       window.addEventListener('touchcancel', clearMouse);
-      window.addEventListener('resize', handleResize);
-      document.addEventListener('visibilitychange', handleVisibilityChange);
+      window.addEventListener('resize', () => { clearTimeout(resizeTimeout); resizeTimeout = setTimeout(resize, 150); });
+      document.addEventListener('visibilitychange', () => {
+        isVisible = document.visibilityState === 'visible';
+        if (isVisible) wakePhysics(); else cancelAnimationFrame(animationFrameId);
+      });
+
+      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+      if (prefersReducedMotion.matches) isSleeping = true;
+      prefersReducedMotion.addEventListener('change', (e) => {
+        if (e.matches) { isSleeping = true; clearMouse(); } else wakePhysics();
+      });
 
       resize();
       animationFrameId = requestAnimationFrame(animate);
 
       const startApp = () => {
-        document.body.classList.add('fonts-loaded');
-        setTimeout(() => {
-          const centerX = width / 2;
-          const centerY = height / 2;
-          lastMouse.x = centerX;
-          lastMouse.y = centerY - 150;
-          mouse.x = centerX;
-          mouse.y = centerY;
-          setTimeout(clearMouse, 200);
-        }, 400);
+        document.body.classList.add('ready');
+        if (!prefersReducedMotion.matches) {
+          setTimeout(() => {
+            const cx = width / 2, cy = height / 2;
+            lastMouse.x = cx; lastMouse.y = cy - 150; mouse.x = cx; mouse.y = cy;
+            wakePhysics();
+            setTimeout(clearMouse, 200);
+          }, 400);
+        }
       };
 
-      if (document.fonts) {
-        document.fonts.ready.then(startApp).catch(startApp);
-      } else {
-        startApp();
-      }
+      const fontPromise = document.fonts ? document.fonts.ready : Promise.resolve();
+      const timeoutPromise = new Promise(resolve => setTimeout(resolve, 2500));
+      Promise.race([fontPromise, timeoutPromise]).then(startApp).catch(startApp);
     })();
   </script>
 </body>
