@@ -2,12 +2,13 @@
 <html lang="en" data-theme="dark">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="color-scheme" content="dark light">
 <meta name="theme-color" id="meta-theme-color" content="#000000">
-<meta name="description" content="A personal, cross-platform RSS reader designed for focus. Coming soon.">
+<meta name="description" content="A private, powerful, and personal cross-platform RSS reader designed for focus.">
+<meta name="keywords" content="RSS, RSS reader, Rssonate, news reader, private RSS, cross-platform RSS">
 <meta property="og:title" content="Rssonate | Private & Powerful RSS Reader">
-<meta property="og:description" content="A personal, cross-platform RSS reader designed for focus. Coming soon.">
+<meta property="og:description" content="A private, powerful, and personal cross-platform RSS reader designed for focus.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://rssonate.github.io/">
 <meta property="og:image" content="https://rssonate.github.io/preview.jpg">
@@ -17,7 +18,7 @@
 <meta property="og:site_name" content="Rssonate">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Rssonate | Private & Powerful RSS Reader">
-<meta name="twitter:description" content="A personal, cross-platform RSS reader designed for focus. Coming soon.">
+<meta name="twitter:description" content="A private, powerful, and personal cross-platform RSS reader designed for focus.">
 <meta name="twitter:image" content="https://rssonate.github.io/preview.jpg">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -33,6 +34,21 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;600&family=Instrument+Serif:ital@1&display=swap">
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;600&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Rssonate",
+  "operatingSystem": "Android, iOS, Web",
+  "applicationCategory": "NewsApplication",
+  "description": "A private, powerful, and personal cross-platform RSS reader designed for focus.",
+  "url": "https://rssonate.github.io/",
+  "creator": {
+    "@type": "Organization",
+    "name": "Rssonate"
+  }
+}
+</script>
 <script>
   (()=>{
     const s = localStorage.getItem('theme');
@@ -46,12 +62,13 @@
   :root {
     --bg: #ffffff;
     --text-primary: rgba(0, 0, 0, 0.92);
-    --text-secondary: rgba(0, 0, 0, 0.60);
-    --text-tertiary: rgba(0, 0, 0, 0.35);
+    --text-secondary: rgba(0, 0, 0, 0.65);
+    --text-tertiary: rgba(0, 0, 0, 0.55);
     --vignette: #ffffff;
-    --glow-shadow: 0 4px 24px rgba(255, 255, 255, 1), 0 2px 8px rgba(255, 255, 255, 0.6);
+    --knockout-halo: 0 0 6px var(--bg), 0 0 12px var(--bg), 0 0 18px var(--bg), 0 0 28px var(--bg);
     --accent: #F36523;
-    --icon-halo: rgba(243, 101, 35, 0.10);
+    --icon-halo: rgba(243, 101, 35, 0.55);
+    --noise-opacity: 0.035;
     --theme-ease: cubic-bezier(0.25, 1, 0.5, 1);
     --theme-duration: 2.2s;
   }
@@ -59,11 +76,12 @@
     --bg: #000000;
     --text-primary: rgba(255, 255, 255, 0.92);
     --text-secondary: rgba(255, 255, 255, 0.60);
-    --text-tertiary: rgba(255, 255, 255, 0.35);
+    --text-tertiary: rgba(255, 255, 255, 0.45);
     --vignette: #000000;
-    --glow-shadow: 0 4px 24px rgba(0, 0, 0, 1), 0 2px 8px rgba(0, 0, 0, 0.6);
+    --knockout-halo: 0 0 6px var(--bg), 0 0 12px var(--bg), 0 0 18px var(--bg), 0 0 28px var(--bg);
     --accent: #FF7A3D;
-    --icon-halo: rgba(255, 122, 61, 0.32);
+    --icon-halo: rgba(255, 122, 61, 0.28);
+    --noise-opacity: 0.055;
   }
   * {
     box-sizing: border-box;
@@ -82,6 +100,15 @@
     overscroll-behavior: none;
     overflow: hidden;
     transition: background-color var(--theme-duration) var(--theme-ease), color var(--theme-duration) var(--theme-ease);
+  }
+  .noise-layer {
+    position: fixed;
+    inset: 0;
+    z-index: 25;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    opacity: var(--noise-opacity);
+    transition: opacity var(--theme-duration) var(--theme-ease);
   }
   #resonance-field {
     position: fixed;
@@ -123,8 +150,8 @@
     pointer-events: none;
   }
   .text-glow {
-    text-shadow: var(--glow-shadow);
-    will-change: transform, opacity, filter;
+    text-shadow: var(--knockout-halo);
+    will-change: transform, opacity;
     transition: text-shadow var(--theme-duration) var(--theme-ease), color var(--theme-duration) var(--theme-ease);
   }
   .theme-toggle {
@@ -175,7 +202,8 @@
     background: radial-gradient(circle, var(--icon-halo) 0%, transparent 70%);
     filter: blur(0.25em);
     z-index: -1;
-    animation: haloPulse 6s ease-in-out 1.8s infinite alternate;
+    opacity: 0.6;
+    animation: haloPulse 6s ease-in-out 1.8s infinite alternate both;
     transition: background var(--theme-duration) var(--theme-ease);
   }
   .logo img {
@@ -184,7 +212,7 @@
     object-fit: contain;
     will-change: transform, filter;
     filter: drop-shadow(0 4px 24px rgba(243, 101, 35, 0.15)) drop-shadow(0 0 8px rgba(255, 200, 67, 0.05));
-    animation: ambientResonance 6s ease-in-out 1.8s infinite alternate;
+    animation: ambientResonance 6s ease-in-out 1.8s infinite alternate both;
   }
   .logo span {
     color: var(--accent);
@@ -237,7 +265,7 @@
     flex-direction: column;
     align-items: center;
     gap: 0.4rem;
-    text-shadow: var(--glow-shadow);
+    text-shadow: var(--knockout-halo);
     transition: text-shadow var(--theme-duration) var(--theme-ease);
   }
   footer a {
@@ -294,6 +322,7 @@
 </style>
 </head>
 <body>
+  <div class="noise-layer" aria-hidden="true"></div>
   <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme">
     <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
       <circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
@@ -510,4 +539,4 @@
     })();
   </script>
 </body>
-</html>
+  </html>
