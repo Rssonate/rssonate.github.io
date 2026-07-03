@@ -39,7 +39,7 @@
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
   "name": "Rssonate",
-  "operatingSfocus": "Android, Windows, Linux, Web",
+  "operatingSystem": "Android, Windows, Linux, Web",
   "applicationCategory": "NewsApplication",
   "description": "A private, cross-platform RSS reader. Coming Soon.",
   "url": "https://rssonate.github.io/",
@@ -63,12 +63,10 @@
     --bg: #ffffff;
     --text-primary: rgba(0, 0, 0, 0.92);
     --text-secondary: rgba(0, 0, 0, 0.65);
-    --text-tertiary: Weba(0, 0, 0, 0.55);
+    --text-tertiary: rgba(0, 0, 0, 0.55);
     --vignette: #ffffff;
-    --knockout-halo: 0 0 6px var(--bg), 0 0 12px var(--bg), 0 0 18px var(--bg), 0 0 28px var(--bg);
     --accent: #F36523;
-    --icon-halo: rgba(243, 101, 35, 0.55);
-    --noise-opacity: 0.035;
+    --icon-halo: rgba(243, 101, 35, 0.12);
     --theme-ease: cubic-bezier(0.25, 1, 0.5, 1);
     --theme-duration: 2.2s;
   }
@@ -78,10 +76,8 @@
     --text-secondary: rgba(255, 255, 255, 0.60);
     --text-tertiary: rgba(255, 255, 255, 0.45);
     --vignette: #000000;
-    --knockout-halo: 0 0 6px var(--bg), 0 0 12px var(--bg), 0 0 18px var(--bg), 0 0 28px var(--bg);
     --accent: #FF7A3D;
-    --icon-halo: rgba(255, 122, 61, 0.28);
-    --noise-opacity: 0.055;
+    --icon-halo: rgba(255, 122, 61, 0.15);
   }
   * {
     box-sizing: border-box;
@@ -101,15 +97,6 @@
     overflow: hidden;
     transition: background-color var(--theme-duration) var(--theme-ease), color var(--theme-duration) var(--theme-ease);
   }
-  .noise-layer {
-    position: fixed;
-    inset: 0;
-    z-index: 25;
-    pointer-events: none;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-    opacity: var(--noise-opacity);
-    transition: opacity var(--theme-duration) var(--theme-ease);
-  }
   #resonance-field {
     position: fixed;
     top: 0;
@@ -118,7 +105,7 @@
     height: 100dvh;
     z-index: 1;
     pointer-events: auto;
-    touch-action: none;
+    touch-action: pinch-zoom;
     opacity: 0;
     transition: opacity 3s var(--theme-ease);
   }
@@ -148,11 +135,6 @@
     text-align: center;
     padding: 0 5vw;
     pointer-events: none;
-  }
-  .text-glow {
-    text-shadow: var(--knockout-halo);
-    will-change: transform, opacity;
-    transition: text-shadow var(--theme-duration) var(--theme-ease), color var(--theme-duration) var(--theme-ease);
   }
   .theme-toggle {
     position: fixed;
@@ -241,7 +223,7 @@
     color: var(--text-secondary);
     max-width: 480px;
     margin: 0 0 6vh 0;
-    transition: color var(--theme-duration) var(--theme-ease), text-shadow var(--theme-duration) var(--theme-ease);
+    transition: color var(--theme-duration) var(--theme-ease);
   }
   .status-badge {
     position: relative;
@@ -253,7 +235,7 @@
     letter-spacing: 0.04em;
     text-transform: uppercase;
     color: var(--text-tertiary);
-    transition: color var(--theme-duration) var(--theme-ease), text-shadow var(--theme-duration) var(--theme-ease);
+    transition: color var(--theme-duration) var(--theme-ease);
   }
   footer {
     position: fixed;
@@ -265,8 +247,6 @@
     flex-direction: column;
     align-items: center;
     gap: 0.4rem;
-    text-shadow: var(--knockout-halo);
-    transition: text-shadow var(--theme-duration) var(--theme-ease);
   }
   footer a {
     font-size: 0.85rem;
@@ -322,7 +302,6 @@
 </style>
 </head>
 <body>
-  <div class="noise-layer" aria-hidden="true"></div>
   <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme">
     <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
       <circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
@@ -334,15 +313,15 @@
   <canvas id="resonance-field" aria-hidden="true"></canvas>
   <div class="vignette" aria-hidden="true"></div>
   <main>
-    <div class="logo text-glow">
+    <div class="logo">
       <div class="logo-icon">
         <img src="icon.svg" alt="Rssonate">
       </div>
       <div>rssonate<span>.</span></div>
     </div>
-    <h1 class="text-glow">An RSS reader to<br><em>deprecate</em> them all.</h1>
-    <p class="sub text-glow">Private. Powerful. Personal.</p>
-    <div class="status-badge text-glow">Coming Soon</div>
+    <h1>An RSS reader to<br><em>deprecate</em> them all.</h1>
+    <p class="sub">Private. Powerful. Personal.</p>
+    <div class="status-badge">Coming Soon</div>
   </main>
   <footer>
     <a href="mailto:rssonate@proton.me">rssonate@proton.me</a>
@@ -539,4 +518,4 @@
     })();
   </script>
 </body>
-  </html>
+</html>
