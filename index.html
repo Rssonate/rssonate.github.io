@@ -5,10 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="color-scheme" content="dark light">
 <meta name="theme-color" id="meta-theme-color" content="#000000">
-<meta name="description" content="A personal, cross-platform RSS reader designed for focus. Currently in Android Beta.">
+<meta name="description" content="A personal, cross-platform RSS reader designed for focus. Coming soon.">
 <meta name="robots" content="index, follow">
 <meta property="og:title" content="Rssonate | Private & Powerful RSS Reader">
-<meta property="og:description" content="A personal, cross-platform RSS reader designed for focus. Currently in Android Beta.">
+<meta property="og:description" content="A personal, cross-platform RSS reader designed for focus. Coming soon.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://rssonate.com/">
 <meta property="og:image" content="https://rssonate.com/preview.jpg">
@@ -18,7 +18,7 @@
 <meta property="og:site_name" content="Rssonate">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Rssonate | Private & Powerful RSS Reader">
-<meta name="twitter:description" content="A personal, cross-platform RSS reader designed for focus. Currently in Android Beta.">
+<meta name="twitter:description" content="A personal, cross-platform RSS reader designed for focus. Coming soon.">
 <meta name="twitter:image" content="https://rssonate.com/preview.jpg">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -53,6 +53,10 @@
     --text-tertiary: rgba(0, 0, 0, 0.35);
     --vignette: #ffffff;
     --glow-shadow: 0 4px 24px rgba(255, 255, 255, 1), 0 2px 8px rgba(255, 255, 255, 0.6);
+    --accent: #F36523;
+    --icon-halo: rgba(243, 101, 35, 0.10);
+    --theme-ease: cubic-bezier(0.25, 1, 0.5, 1);
+    --theme-duration: 2.2s;
   }
   [data-theme="dark"] {
     --bg: #000000;
@@ -61,6 +65,8 @@
     --text-tertiary: rgba(255, 255, 255, 0.35);
     --vignette: #000000;
     --glow-shadow: 0 4px 24px rgba(0, 0, 0, 1), 0 2px 8px rgba(0, 0, 0, 0.6);
+    --accent: #FF7A3D;
+    --icon-halo: rgba(255, 122, 61, 0.32);
   }
   * {
     box-sizing: border-box;
@@ -78,7 +84,7 @@
     text-rendering: optimizeLegibility;
     overscroll-behavior: none;
     overflow: hidden;
-    transition: background-color 2.2s cubic-bezier(0.25, 1, 0.5, 1), color 2.2s cubic-bezier(0.25, 1, 0.5, 1);
+    transition: background-color var(--theme-duration) var(--theme-ease), color var(--theme-duration) var(--theme-ease);
   }
   #resonance-field {
     position: fixed;
@@ -90,7 +96,7 @@
     pointer-events: auto;
     touch-action: none;
     opacity: 0;
-    transition: opacity 3s cubic-bezier(0.22, 1, 0.36, 1);
+    transition: opacity 3s var(--theme-ease);
   }
   body.fonts-loaded #resonance-field {
     opacity: 1;
@@ -104,7 +110,7 @@
     z-index: 2;
     background: radial-gradient(circle at center, transparent 30%, var(--vignette) 120%);
     pointer-events: none;
-    transition: background 2.2s cubic-bezier(0.25, 1, 0.5, 1);
+    transition: background var(--theme-duration) var(--theme-ease);
   }
   main {
     position: relative;
@@ -122,7 +128,7 @@
   .text-glow {
     text-shadow: var(--glow-shadow);
     will-change: transform, opacity, filter;
-    transition: text-shadow 2.2s cubic-bezier(0.25, 1, 0.5, 1);
+    transition: text-shadow var(--theme-duration) var(--theme-ease), color var(--theme-duration) var(--theme-ease);
   }
   .theme-toggle {
     position: fixed;
@@ -131,9 +137,9 @@
     z-index: 20;
     background: transparent;
     border: none;
-    color: var(--text-tertiary);
+    color: var(--text-secondary);
     cursor: pointer;
-    padding: 0.5rem;
+    padding: 0.75rem;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -141,7 +147,7 @@
     opacity: 0;
   }
   .theme-toggle:hover { color: var(--text-primary); }
-  .theme-toggle svg { width: 20px; height: 20px; }
+  .theme-toggle svg { width: 22px; height: 22px; }
   [data-theme="dark"] .icon-moon { display: none; }
   [data-theme="light"] .icon-sun { display: none; }
   .logo, h1, p.sub, .status-badge, footer {
@@ -158,16 +164,33 @@
     color: var(--text-primary);
     margin-bottom: 6vh;
   }
+  .logo-icon {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .logo-icon::before {
+    content: '';
+    position: absolute;
+    inset: -55%;
+    background: radial-gradient(circle, var(--icon-halo) 0%, transparent 70%);
+    filter: blur(18px);
+    z-index: -1;
+    animation: haloPulse 6s ease-in-out 1.8s infinite alternate;
+    transition: background var(--theme-duration) var(--theme-ease);
+  }
   .logo img {
-    width: 56px; 
-    height: 56px;
+    width: clamp(44px, 6vw, 72px);
+    height: clamp(44px, 6vw, 72px);
     object-fit: contain;
     will-change: transform, filter;
     filter: drop-shadow(0 4px 24px rgba(243, 101, 35, 0.15)) drop-shadow(0 0 8px rgba(255, 200, 67, 0.05));
     animation: ambientResonance 6s ease-in-out 1.8s infinite alternate;
   }
   .logo span {
-    color: var(--text-tertiary);
+    color: var(--accent);
+    transition: color var(--theme-duration) var(--theme-ease);
   }
   h1 {
     font-weight: 300;
@@ -192,6 +215,7 @@
     color: var(--text-secondary);
     max-width: 480px;
     margin: 0 0 6vh 0;
+    transition: color var(--theme-duration) var(--theme-ease), text-shadow var(--theme-duration) var(--theme-ease);
   }
   .status-badge {
     position: relative;
@@ -203,6 +227,7 @@
     letter-spacing: 0.04em;
     text-transform: uppercase;
     color: var(--text-tertiary);
+    transition: color var(--theme-duration) var(--theme-ease), text-shadow var(--theme-duration) var(--theme-ease);
   }
   footer {
     position: fixed;
@@ -214,6 +239,8 @@
     flex-direction: column;
     align-items: center;
     gap: 0.4rem;
+    text-shadow: var(--glow-shadow);
+    transition: text-shadow var(--theme-duration) var(--theme-ease);
   }
   footer a {
     font-size: 0.85rem;
@@ -234,12 +261,12 @@
     opacity: 0.6;
     pointer-events: none;
   }
-  body.fonts-loaded .logo { animation: cinematicReveal 1.6s cubic-bezier(0.22, 1, 0.36, 1) 0.1s forwards; }
-  body.fonts-loaded h1 { animation: cinematicReveal 1.6s cubic-bezier(0.22, 1, 0.36, 1) 0.25s forwards; }
-  body.fonts-loaded p.sub { animation: cinematicReveal 1.6s cubic-bezier(0.22, 1, 0.36, 1) 0.4s forwards; }
-  body.fonts-loaded .status-badge { animation: cinematicReveal 1.6s cubic-bezier(0.22, 1, 0.36, 1) 0.55s forwards; }
-  body.fonts-loaded footer { animation: cinematicReveal 1.6s cubic-bezier(0.22, 1, 0.36, 1) 0.7s forwards; }
-  body.fonts-loaded .theme-toggle { animation: cinematicReveal 1.6s cubic-bezier(0.22, 1, 0.36, 1) 0.85s forwards; }
+  body.fonts-loaded .logo { animation: cinematicReveal 1.6s var(--theme-ease) 0.1s forwards; }
+  body.fonts-loaded h1 { animation: cinematicReveal 1.6s var(--theme-ease) 0.25s forwards; }
+  body.fonts-loaded p.sub { animation: cinematicReveal 1.6s var(--theme-ease) 0.4s forwards; }
+  body.fonts-loaded .status-badge { animation: cinematicReveal 1.6s var(--theme-ease) 0.55s forwards; }
+  body.fonts-loaded footer { animation: cinematicReveal 1.6s var(--theme-ease) 0.7s forwards; }
+  body.fonts-loaded .theme-toggle { animation: cinematicReveal 1.6s var(--theme-ease) 0.85s forwards; }
   @keyframes cinematicReveal {
     0% { opacity: 0; filter: blur(12px); transform: translateY(16px) scale(0.98); }
     100% { opacity: 1; filter: blur(0); transform: translateY(0) scale(1); }
@@ -247,6 +274,24 @@
   @keyframes ambientResonance {
     0% { transform: scale(1); filter: drop-shadow(0 4px 24px rgba(243, 101, 35, 0.15)) drop-shadow(0 0 8px rgba(255, 200, 67, 0.05)); }
     100% { transform: scale(1.03); filter: drop-shadow(0 8px 32px rgba(243, 101, 35, 0.35)) drop-shadow(0 0 16px rgba(255, 200, 67, 0.15)); }
+  }
+  @keyframes haloPulse {
+    0% { opacity: 0.6; transform: scale(1); }
+    100% { opacity: 1; transform: scale(1.1); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .logo img, .logo-icon::before {
+      animation: none;
+    }
+    body.fonts-loaded .logo,
+    body.fonts-loaded h1,
+    body.fonts-loaded p.sub,
+    body.fonts-loaded .status-badge,
+    body.fonts-loaded footer,
+    body.fonts-loaded .theme-toggle {
+      animation: none;
+      opacity: 1;
+    }
   }
 </style>
 </head>
@@ -263,12 +308,14 @@
   <div class="vignette" aria-hidden="true"></div>
   <main>
     <div class="logo text-glow">
-      <img src="icon.svg" alt="Rssonate">
+      <div class="logo-icon">
+        <img src="icon.svg" alt="Rssonate">
+      </div>
       <div>rssonate<span>.</span></div>
     </div>
     <h1 class="text-glow">An RSS reader to<br><em>deprecate</em> them all.</h1>
     <p class="sub text-glow">Private. Powerful. Personal.</p>
-    <div class="status-badge text-glow">Android Beta</div>
+    <div class="status-badge text-glow">Coming Soon</div>
   </main>
   <footer>
     <a href="mailto:rssonate@proton.me">rssonate@proton.me</a>
@@ -320,7 +367,7 @@
       const SPREAD = 0.15;
       const MOUSE_FORCE = 4.0;
       const PHYSICS_STEP = 1000 / 120;
-      
+
       let mouseRadius = 150;
       const mouse = { x: -1000, y: -1000 };
       const lastMouse = { x: -1000, y: -1000 };
@@ -420,7 +467,7 @@
         if (!isVisible) return;
         if (!lastTime) lastTime = time;
         let dt = time - lastTime;
-        if (dt > 100) dt = PHYSICS_STEP; 
+        if (dt > 100) dt = PHYSICS_STEP;
         lastTime = time;
         accumulator += dt;
         while (accumulator >= PHYSICS_STEP) {
