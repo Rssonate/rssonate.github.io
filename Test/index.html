@@ -56,23 +56,32 @@
     --accent: #FF7A3D;
     --icon-halo: rgba(255, 122, 61, 0.32);
   }
+  
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  
   html, body {
-    margin: 0; padding: 0; width: 100%; min-height: 100dvh;
+    margin: 0; padding: 0; width: 100vw; height: 100dvh;
     background: var(--bg); color: var(--text-primary);
     font-family: 'Geist', -apple-system, BlinkMacSystemFont, sans-serif;
-    -webkit-font-smoothing: antialiased; overscroll-behavior: none; overflow: hidden;
+    -webkit-font-smoothing: antialiased; 
+    overscroll-behavior: none; 
+    overflow: hidden; /* Hard clip to prevent scrollbars */
+    touch-action: none; /* Prevents mobile swipe-scroll */
     transition: background-color var(--theme-duration) var(--theme-ease), color var(--theme-duration) var(--theme-ease);
   }
-  
-  /* Apply Camera Shake for Heavy Drops */
-  body.is-playing { transform: translate(var(--shake-x), var(--shake-y)); }
 
-  #resonance-field { position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh; z-index: 1; opacity: 0; transition: opacity 3s var(--theme-ease); }
+  #resonance-field { position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh; z-index: 1; opacity: 0; transition: opacity 3s var(--theme-ease); will-change: transform; }
   body.ready #resonance-field { opacity: 1; }
+  
   .vignette { position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh; z-index: 2; background: radial-gradient(circle at center, transparent 30%, var(--vignette) 120%); pointer-events: none; transition: background var(--theme-duration) var(--theme-ease); }
   
-  main { position: relative; z-index: 10; width: 100%; height: 100dvh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 0 5vw; pointer-events: none; }
+  main { position: relative; z-index: 10; width: 100%; height: 100dvh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 0 5vw; pointer-events: none; will-change: transform; }
+
+  /* Apply Camera Shake ONLY to main content and strings (Fixes Scrollbar Issue) */
+  body.is-playing #resonance-field,
+  body.is-playing main { 
+    transform: translate(var(--shake-x), var(--shake-y)); 
+  }
   
   /* The Melting Typography */
   .fade-ui { transition: opacity 0.8s var(--theme-ease), transform 0.8s var(--theme-ease); will-change: opacity, transform; }
@@ -117,18 +126,18 @@
     display: flex; flex-direction: column; align-items: center; gap: 0.85rem; 
     font-weight: 600; font-size: 1.1rem; letter-spacing: -0.04em; 
     color: var(--text-primary); margin-bottom: 6vh; 
-    transition: transform 1.8s var(--theme-ease); /* Smooth shifting transition */
+    transition: transform 1.8s var(--theme-ease);
     will-change: transform;
   }
   
   .logo-icon { 
     position: relative; display: flex; align-items: center; justify-content: center; 
-    font-size: clamp(56px, 9vw, 96px); /* Enlarged Base Screen Size */
+    font-size: clamp(56px, 9vw, 96px); 
     transition: transform 1.5s var(--theme-ease);
   }
   
   .logo-icon::before {
-    content: ''; position: absolute; inset: -65%; /* Extended Glow Spread */
+    content: ''; position: absolute; inset: -65%; 
     background: radial-gradient(circle, var(--icon-halo) 0%, transparent 70%); filter: blur(0.25em); z-index: -1;
     animation: haloPulse 6s ease-in-out 1.8s infinite alternate; transition: background var(--theme-duration) var(--theme-ease);
   }
@@ -141,11 +150,9 @@
   
   /* --- THE SPECTACLE ALIGNMENT & SIZING --- */
   body.is-playing .logo {
-    /* Pushes the logo to the optical center and scales it massively */
-    transform: translateY(clamp(10vh, 14vh, 18vh)) scale(clamp(1.2, 1.4, 1.6));
+    transform: translateY(15vh) scale(1.3);
   }
 
-  /* KILLS THE CSS BREATHING. LETS THE MATH DO THE WORK */
   body.is-playing .logo-icon::before {
     animation: none !important; transition: none !important;
     transform: scale(calc(1.1 + var(--audio-bass) * 0.7));
@@ -216,13 +223,11 @@
   <div class="vignette" aria-hidden="true"></div>
   
   <main>
-    <!-- Logo wrapper prevents transition conflicts with the load animation -->
     <div class="logo-wrapper">
       <div class="logo">
         <div class="logo-icon text-glow">
           <img src="../icon.svg" alt="Rssonate">
         </div>
-        <!-- This text melts away when playing -->
         <div class="logo-text fade-ui text-glow">rssonate<span>.</span></div>
       </div>
     </div>
@@ -304,7 +309,7 @@
       const canvas = document.getElementById('resonance-field');
       const ctx = canvas.getContext('2d', { alpha: true });
 
-      let width, height, strings = [], animationFrameId, resizeTimeout;
+      let width, height, strings = [], animationFrameId = null, resizeTimeout;
       let isVisible = true, isSleeping = false;
       
       const NUM_STRINGS = 55, RESOLUTION = 30, SPREAD = 0.15, MOUSE_FORCE = 4.0, PHYSICS_STEP = 1000 / 120;
@@ -330,9 +335,10 @@
         }
       };
 
+      // Guaranteed robust loop restarter
       const wakePhysics = () => {
-        if (isSleeping) {
-          isSleeping = false;
+        isSleeping = false;
+        if (!animationFrameId) {
           lastTime = performance.now();
           accumulator = 0;
           animationFrameId = requestAnimationFrame(animate);
@@ -502,7 +508,10 @@
       let lastTime = performance.now(), accumulator = 0;
 
       const animate = (time) => {
-        if (!isVisible || isSleeping) return;
+        if (!isVisible || isSleeping) {
+          animationFrameId = null; // Important for hard restarts
+          return;
+        }
         let dt = time - lastTime;
         if (dt > 100) dt = PHYSICS_STEP; 
         lastTime = time;
@@ -514,7 +523,6 @@
       };
 
       const resize = () => {
-        // Capping DPR to 2 completely solves the lag spike on zooming/large displays
         const dpr = Math.min(window.devicePixelRatio || 1, 2);
         width = window.innerWidth; height = window.innerHeight;
         canvas.width = width * dpr; canvas.height = height * dpr;
@@ -539,15 +547,16 @@
       window.addEventListener('touchcancel', clearMouse);
       window.addEventListener('resize', () => { clearTimeout(resizeTimeout); resizeTimeout = setTimeout(resize, 150); });
       
-      // Zero out the accumulator on visibility change to absolutely prevent freezing
+      // FIX Tab-switch freezing definitively 
       document.addEventListener('visibilitychange', () => {
         isVisible = document.visibilityState === 'visible';
         if (isVisible) {
-          lastTime = performance.now();
-          accumulator = 0; 
-          wakePhysics();
+          wakePhysics(); // Re-ignites the physics engine immediately
         } else {
-          cancelAnimationFrame(animationFrameId);
+          if (animationFrameId) {
+            cancelAnimationFrame(animationFrameId);
+            animationFrameId = null;
+          }
         }
       });
 
@@ -558,7 +567,7 @@
       });
 
       resize();
-      animationFrameId = requestAnimationFrame(animate);
+      wakePhysics(); // Start the loop immediately
 
       const startApp = () => {
         document.body.classList.add('ready');
