@@ -65,7 +65,7 @@
     transition: background-color var(--theme-duration) var(--theme-ease), color var(--theme-duration) var(--theme-ease);
   }
   
-  /* Apply Camera Shake */
+  /* Apply Camera Shake for Heavy Drops */
   body.is-playing { transform: translate(var(--shake-x), var(--shake-y)); }
 
   #resonance-field { position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh; z-index: 1; opacity: 0; transition: opacity 3s var(--theme-ease); }
@@ -74,12 +74,13 @@
   
   main { position: relative; z-index: 10; width: 100%; height: 100dvh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 0 5vw; pointer-events: none; }
   
-  /* UI Elements to Hide on Play */
+  /* The Melting Typography */
   .fade-ui { transition: opacity 0.8s var(--theme-ease), transform 0.8s var(--theme-ease); will-change: opacity, transform; }
   body.is-playing .fade-ui { opacity: 0 !important; transform: translateY(-20px); pointer-events: none; }
   
   .text-glow { text-shadow: var(--glow-shadow); transition: text-shadow var(--theme-duration) var(--theme-ease), color var(--theme-duration) var(--theme-ease); }
   
+  /* Controls */
   .theme-toggle, .audio-toggle {
     position: fixed; top: clamp(1.5rem, 4vh, 2.5rem); z-index: 20;
     background: transparent; border: none; color: var(--text-secondary);
@@ -93,6 +94,7 @@
   [data-theme="dark"] .icon-moon { display: none; }
   [data-theme="light"] .icon-sun { display: none; }
 
+  /* Premium Glassmorphic Credit */
   .audio-credit {
     position: fixed; bottom: max(2.5rem, env(safe-area-inset-bottom)); right: clamp(1.5rem, 4vw, 2.5rem); z-index: 20;
     display: flex; align-items: center; gap: 14px;
@@ -108,32 +110,54 @@
   .audio-bars { display: flex; gap: 3px; align-items: flex-end; height: 18px; padding-bottom: 2px; }
   .audio-bars span { width: 3px; background: var(--accent); border-radius: 3px; height: 4px; transition: height 0.05s linear; will-change: height; }
 
-  .logo, h1, p.sub, .status-badge, footer { opacity: 0; }
-  .logo { display: flex; flex-direction: column; align-items: center; gap: 0.85rem; font-weight: 600; font-size: 1.1rem; letter-spacing: -0.04em; color: var(--text-primary); margin-bottom: 6vh; }
-  .logo-icon { position: relative; display: flex; align-items: center; justify-content: center; font-size: clamp(44px, 6vw, 72px); }
+  /* Initial Load States */
+  .logo-wrapper, h1, p.sub, .status-badge { opacity: 0; }
+  
+  .logo { 
+    display: flex; flex-direction: column; align-items: center; gap: 0.85rem; 
+    font-weight: 600; font-size: 1.1rem; letter-spacing: -0.04em; 
+    color: var(--text-primary); margin-bottom: 6vh; 
+    transition: transform 1.8s var(--theme-ease); /* Smooth shifting transition */
+    will-change: transform;
+  }
+  
+  .logo-icon { 
+    position: relative; display: flex; align-items: center; justify-content: center; 
+    font-size: clamp(56px, 9vw, 96px); /* Enlarged Base Screen Size */
+    transition: transform 1.5s var(--theme-ease);
+  }
   
   .logo-icon::before {
-    content: ''; position: absolute; inset: -55%; background: radial-gradient(circle, var(--icon-halo) 0%, transparent 70%); filter: blur(0.25em); z-index: -1;
+    content: ''; position: absolute; inset: -65%; /* Extended Glow Spread */
+    background: radial-gradient(circle, var(--icon-halo) 0%, transparent 70%); filter: blur(0.25em); z-index: -1;
     animation: haloPulse 6s ease-in-out 1.8s infinite alternate; transition: background var(--theme-duration) var(--theme-ease);
   }
+  
   .logo img {
     width: 1em; height: 1em; object-fit: contain; will-change: transform, filter;
     filter: drop-shadow(0 4px 24px rgba(243, 101, 35, 0.15)) drop-shadow(0 0 8px rgba(255, 200, 67, 0.05));
     animation: ambientResonance 6s ease-in-out 1.8s infinite alternate;
   }
   
-  /* OVERRIDE FOR PLAYING - NO TRANSITIONS, NO KEYFRAMES, INSTANT SNAP */
+  /* --- THE SPECTACLE ALIGNMENT & SIZING --- */
+  body.is-playing .logo {
+    /* Pushes the logo to the optical center and scales it massively */
+    transform: translateY(clamp(10vh, 14vh, 18vh)) scale(clamp(1.2, 1.4, 1.6));
+  }
+
+  /* KILLS THE CSS BREATHING. LETS THE MATH DO THE WORK */
   body.is-playing .logo-icon::before {
     animation: none !important; transition: none !important;
-    transform: scale(calc(1 + var(--audio-bass) * 0.5));
-    opacity: calc(0.2 + var(--audio-bass) * 0.8);
+    transform: scale(calc(1.1 + var(--audio-bass) * 0.7));
+    opacity: calc(0.1 + var(--audio-bass) * 0.9);
   }
   body.is-playing .logo img {
     animation: none !important; transition: none !important;
     transform: scale(calc(1 + var(--audio-bass) * 0.15));
-    filter: drop-shadow(0 calc(4px + var(--audio-bass)*12px) calc(24px + var(--audio-bass)*40px) rgba(243, 101, 35, calc(0.15 + var(--audio-bass)*0.85))) 
-            drop-shadow(0 0 calc(8px + var(--audio-bass)*20px) rgba(255, 200, 67, calc(0.05 + var(--audio-bass)*0.4)));
+    filter: drop-shadow(0 calc(4px + var(--audio-bass)*16px) calc(24px + var(--audio-bass)*48px) rgba(243, 101, 35, calc(0.15 + var(--audio-bass)*0.85))) 
+            drop-shadow(0 0 calc(8px + var(--audio-bass)*24px) rgba(255, 200, 67, calc(0.05 + var(--audio-bass)*0.5)));
   }
+  /* ------------------------------------------ */
 
   .logo span { color: var(--accent); transition: color var(--theme-duration) var(--theme-ease); }
   h1 { font-weight: 300; font-size: clamp(2.5rem, 7vw, 6.5rem); line-height: 1.05; letter-spacing: -0.04em; margin: 0 0 clamp(1.25rem, 3vh, 2rem) 0; }
@@ -141,7 +165,7 @@
   p.sub { font-weight: 400; font-size: clamp(1rem, 1.5vw, 1.25rem); line-height: 1.6; letter-spacing: -0.01em; color: var(--text-secondary); margin: 0 0 6vh 0; }
   .status-badge { display: inline-flex; font-size: 0.75rem; font-weight: 400; letter-spacing: 0.04em; text-transform: uppercase; color: var(--text-tertiary); }
   
-  body.ready .logo { animation: cinematicReveal 1.6s var(--theme-ease) 0.1s forwards; }
+  body.ready .logo-wrapper { animation: cinematicReveal 1.6s var(--theme-ease) 0.1s forwards; }
   body.ready h1 { animation: cinematicReveal 1.6s var(--theme-ease) 0.25s forwards; }
   body.ready p.sub { animation: cinematicReveal 1.6s var(--theme-ease) 0.4s forwards; }
   body.ready .status-badge { animation: cinematicReveal 1.6s var(--theme-ease) 0.55s forwards; }
@@ -192,11 +216,15 @@
   <div class="vignette" aria-hidden="true"></div>
   
   <main>
-    <div class="logo text-glow">
-      <div class="logo-icon">
-        <img src="../icon.svg" alt="Rssonate">
+    <!-- Logo wrapper prevents transition conflicts with the load animation -->
+    <div class="logo-wrapper">
+      <div class="logo">
+        <div class="logo-icon text-glow">
+          <img src="../icon.svg" alt="Rssonate">
+        </div>
+        <!-- This text melts away when playing -->
+        <div class="logo-text fade-ui text-glow">rssonate<span>.</span></div>
       </div>
-      <div class="fade-ui">rssonate<span>.</span></div>
     </div>
     <h1 class="fade-ui text-glow">An RSS reader to<br><em>deprecate</em> them all.</h1>
     <p class="fade-ui sub text-glow">Private. Powerful. Personal.</p>
@@ -208,9 +236,7 @@
       const themeToggleBtn = document.getElementById('theme-toggle');
       const metaThemeColor = document.getElementById('meta-theme-color');
       
-      // We keep a baseline theme color, and a "current" render color (cR, cG, cB)
-      let tR = 255, tG = 250, tB = 245; 
-      let cR = 255, cG = 250, cB = 245;
+      let tR = 255, tG = 250, tB = 245, cR = 255, cG = 250, cB = 245;
 
       const applyThemeVars = (theme) => {
         const isDark = theme === 'dark';
@@ -281,7 +307,6 @@
       let width, height, strings = [], animationFrameId, resizeTimeout;
       let isVisible = true, isSleeping = false;
       
-      // Dynamic physics constants
       const NUM_STRINGS = 55, RESOLUTION = 30, SPREAD = 0.15, MOUSE_FORCE = 4.0, PHYSICS_STEP = 1000 / 120;
       let baseTension = 0.035, baseDamping = 0.92;
       let currentTension = baseTension, currentDamping = baseDamping;
@@ -316,7 +341,6 @@
 
       const updatePhysics = () => {
         let maxV = 0;
-        let globalAlpha = 1.0;
 
         // --- PRE-BAKED AUDIO SPECTACLE INJECTION ---
         if (isPlaying && ytReady && typeof trackData !== 'undefined' && trackData.length > 0) {
@@ -326,10 +350,10 @@
           if (frameIndex < trackData.length) {
             let frame = trackData[frameIndex];
             
-            // INSTANT ATTACK, SMOOTH DECAY (fixes the breathing)
-            audioBass = frame.b > audioBass ? frame.b : audioBass + (frame.b - audioBass) * 0.08;
-            audioMids += (frame.m - audioMids) * 0.15;
-            audioHighs = frame.h > audioHighs ? frame.h : audioHighs + (frame.h - audioHighs) * 0.1;
+            // MATH-DRIVEN GLOW: Instant Attack, Smooth Decay
+            if (frame.b > audioBass) audioBass = frame.b; else audioBass += (frame.b - audioBass) * 0.12;
+            if (frame.m > audioMids) audioMids = frame.m; else audioMids += (frame.m - audioMids) * 0.10;
+            if (frame.h > audioHighs) audioHighs = frame.h; else audioHighs += (frame.h - audioHighs) * 0.15;
 
             document.documentElement.style.setProperty('--audio-bass', audioBass);
             
@@ -341,10 +365,9 @@
             if(barM) barM.style.height = Math.max(4, audioMids * 18) + 'px';
             if(barH) barH.style.height = Math.max(4, audioHighs * 18) + 'px';
 
-            // 1. DYNAMIC COLOR INJECTION (The Drop)
+            // 1. DYNAMIC COLOR INJECTION
             let targetR = tR, targetG = tG, targetB = tB;
             if (audioBass > 0.6) {
-              // Mix in Rssonate Orange (243, 101, 35) on heavy drops
               let mix = (audioBass - 0.6) * 2.5; 
               if (mix > 1) mix = 1;
               targetR = tR + (243 - tR) * mix;
@@ -357,7 +380,7 @@
 
             // 2. DYNAMIC TENSION & CAMERA SHAKE
             currentTension = baseTension + (audioBass * 0.04);
-            currentDamping = baseDamping - (audioHighs * 0.03); // Chaos on hi-hats
+            currentDamping = baseDamping - (audioHighs * 0.03); 
             
             if (audioBass > 0.8) {
               let shakeIntensity = (audioBass - 0.8) * 15;
@@ -373,7 +396,7 @@
             let bassHit = frame.b > 0.65 && (frame.b - lastBass > 0.08); 
             lastBass = frame.b;
 
-            // "Auto-Gain" Violin Bowing for calm parts
+            // Orchestral / Violin Bowing logic for calm intro
             let energy = (audioBass + audioMids + audioHighs) / 3;
             let calmMultiplier = energy < 0.2 ? (2.0 - (energy*10)) : 1;
             let bowWave = Math.sin(currentTime * 3) * audioMids * calmMultiplier * 1.2;
@@ -381,14 +404,14 @@
             for (let i = 0; i < strings.length; i++) {
               let pts = strings[i].points;
               let midPt = Math.floor(pts.length / 2);
-              let distRatio = Math.abs(i - centerStr) / centerStr; // 0 at center, 1 at edge
+              let distRatio = Math.abs(i - centerStr) / centerStr;
 
-              // Subtle Violin Wind (always active, amplified in quiet parts)
+              // Violin Wind 
               for (let p = 1; p < pts.length - 1; p++) {
                 if (Math.random() > 0.5) pts[p].vy += bowWave * 0.05 * (p / pts.length);
               }
 
-              // Heavy Kick Drum
+              // Kick Drum Shockwave
               if (bassHit) {
                 let direction = (i < centerStr) ? -1 : 1;
                 if (i === centerStr) direction = Math.random() > 0.5 ? 1 : -1;
@@ -396,20 +419,16 @@
                 pts[midPt].vy += force * direction;
               }
 
-              // Mids Ripple
+              // Synth Ripple
               if (frame.m > 0.4 && Math.random() > 0.8) {
                 pts[midPt].vy += frame.m * 2.5 * (Math.random() > 0.5 ? 1 : -1);
               }
 
-              // Highs Scatter
+              // Hi-Hats Scatter
               if (frame.h > 0.3 && distRatio > 0.5 && Math.random() > 0.7) {
                 pts[midPt].vy += frame.h * 3.0 * (Math.random() > 0.5 ? 1 : -1);
               }
             }
-            
-            // Dynamic Line Thickness based on bass
-            globalAlpha = 1.0 + (audioBass * 1.5);
-            
           }
         } else if (!isPlaying) {
           audioBass += (0 - audioBass) * 0.2;
@@ -485,7 +504,7 @@
       const animate = (time) => {
         if (!isVisible || isSleeping) return;
         let dt = time - lastTime;
-        if (dt > 100) dt = PHYSICS_STEP; // Cap lag spike
+        if (dt > 100) dt = PHYSICS_STEP; 
         lastTime = time;
         accumulator += dt;
         while (accumulator >= PHYSICS_STEP) { updatePhysics(); accumulator -= PHYSICS_STEP; }
@@ -495,7 +514,7 @@
       };
 
       const resize = () => {
-        // Capping DPR to 2 prevents severe lag when users zoom in far
+        // Capping DPR to 2 completely solves the lag spike on zooming/large displays
         const dpr = Math.min(window.devicePixelRatio || 1, 2);
         width = window.innerWidth; height = window.innerHeight;
         canvas.width = width * dpr; canvas.height = height * dpr;
@@ -520,12 +539,12 @@
       window.addEventListener('touchcancel', clearMouse);
       window.addEventListener('resize', () => { clearTimeout(resizeTimeout); resizeTimeout = setTimeout(resize, 150); });
       
-      // FIX Tab-switch freezing 
+      // Zero out the accumulator on visibility change to absolutely prevent freezing
       document.addEventListener('visibilitychange', () => {
         isVisible = document.visibilityState === 'visible';
         if (isVisible) {
           lastTime = performance.now();
-          accumulator = 0; // Destroy backed-up physics frames
+          accumulator = 0; 
           wakePhysics();
         } else {
           cancelAnimationFrame(animationFrameId);
