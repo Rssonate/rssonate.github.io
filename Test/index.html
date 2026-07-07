@@ -42,6 +42,7 @@
     
     /* Dynamic Audio Variables */
     --audio-bass: 0;
+    --audio-kick: 0;
     --shake-x: 0px;
     --shake-y: 0px;
   }
@@ -65,19 +66,19 @@
     font-family: 'Geist', -apple-system, BlinkMacSystemFont, sans-serif;
     -webkit-font-smoothing: antialiased; 
     overscroll-behavior: none; 
-    overflow: hidden; /* Hard clip to prevent scrollbars */
-    touch-action: none; /* Prevents mobile swipe-scroll */
+    overflow: hidden; 
     transition: background-color var(--theme-duration) var(--theme-ease), color var(--theme-duration) var(--theme-ease);
   }
 
-  #resonance-field { position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh; z-index: 1; opacity: 0; transition: opacity 3s var(--theme-ease); will-change: transform; }
+  /* Fixed Mobile Swiping & Freezing */
+  #resonance-field { position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh; z-index: 1; opacity: 0; transition: opacity 3s var(--theme-ease); will-change: transform; touch-action: none; }
   body.ready #resonance-field { opacity: 1; }
   
   .vignette { position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh; z-index: 2; background: radial-gradient(circle at center, transparent 30%, var(--vignette) 120%); pointer-events: none; transition: background var(--theme-duration) var(--theme-ease); }
   
   main { position: relative; z-index: 10; width: 100%; height: 100dvh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 0 5vw; pointer-events: none; will-change: transform; }
 
-  /* Apply Camera Shake ONLY to main content and strings (Fixes Scrollbar Issue) */
+  /* Apply Parallax Camera Shake ONLY to main content and strings (Fixes Scrollbars) */
   body.is-playing #resonance-field,
   body.is-playing main { 
     transform: translate(var(--shake-x), var(--shake-y)); 
@@ -95,6 +96,7 @@
     background: transparent; border: none; color: var(--text-secondary);
     cursor: pointer; padding: 0.75rem; display: flex; align-items: center; justify-content: center;
     transition: color 0.4s ease, transform 0.4s var(--theme-ease); opacity: 0;
+    pointer-events: auto;
   }
   .theme-toggle { right: clamp(1.5rem, 4vw, 2.5rem); }
   .audio-toggle { right: calc(clamp(1.5rem, 4vw, 2.5rem) + 3.2rem); pointer-events: none; }
@@ -119,7 +121,7 @@
   .audio-bars { display: flex; gap: 3px; align-items: flex-end; height: 18px; padding-bottom: 2px; }
   .audio-bars span { width: 3px; background: var(--accent); border-radius: 3px; height: 4px; transition: height 0.05s linear; will-change: height; }
 
-  /* Initial Load States */
+  /* Base Logo Styling */
   .logo-wrapper, h1, p.sub, .status-badge { opacity: 0; }
   
   .logo { 
@@ -148,21 +150,27 @@
     animation: ambientResonance 6s ease-in-out 1.8s infinite alternate;
   }
   
-  /* --- THE SPECTACLE ALIGNMENT & SIZING --- */
+  /* --- THE SPECTACLE ALIGNMENT & DUAL-STAGE MATH GATING --- */
   body.is-playing .logo {
     transform: translateY(15vh) scale(1.3);
   }
 
-  body.is-playing .logo-icon::before {
-    animation: none !important; transition: none !important;
-    transform: scale(calc(1.1 + var(--audio-bass) * 0.7));
-    opacity: calc(0.1 + var(--audio-bass) * 0.9);
+  body.is-playing .logo-icon::before,
+  body.is-settling .logo-icon::before {
+    animation: none !important; 
+    transition: transform 0.05s linear, opacity 0.05s linear !important;
+    /* Bass sustains the size slowly, Kick provides the sharp spikes */
+    transform: scale(calc(1.0 + var(--audio-bass) * 0.5 + var(--audio-kick) * 0.4));
+    opacity: calc(0.6 + var(--audio-bass) * 0.3 + var(--audio-kick) * 0.4);
   }
-  body.is-playing .logo img {
-    animation: none !important; transition: none !important;
-    transform: scale(calc(1 + var(--audio-bass) * 0.15));
-    filter: drop-shadow(0 calc(4px + var(--audio-bass)*16px) calc(24px + var(--audio-bass)*48px) rgba(243, 101, 35, calc(0.15 + var(--audio-bass)*0.85))) 
-            drop-shadow(0 0 calc(8px + var(--audio-bass)*24px) rgba(255, 200, 67, calc(0.05 + var(--audio-bass)*0.5)));
+  
+  body.is-playing .logo img,
+  body.is-settling .logo img {
+    animation: none !important; 
+    transition: transform 0.05s linear, filter 0.05s linear !important;
+    transform: scale(calc(1.0 + var(--audio-bass) * 0.1 + var(--audio-kick) * 0.15));
+    filter: drop-shadow(0 calc(4px + var(--audio-kick)*16px) calc(24px + var(--audio-bass)*32px + var(--audio-kick)*32px) rgba(243, 101, 35, calc(0.15 + var(--audio-bass)*0.5 + var(--audio-kick)*0.35))) 
+            drop-shadow(0 0 calc(8px + var(--audio-kick)*20px) rgba(255, 200, 67, calc(0.05 + var(--audio-bass)*0.3 + var(--audio-kick)*0.2)));
   }
   /* ------------------------------------------ */
 
@@ -268,7 +276,7 @@
       document.head.appendChild(ytScript);
 
       let player, isPlaying = false, ytReady = false;
-      let audioBass = 0, audioMids = 0, audioHighs = 0, lastBass = 0;
+      let audioBass = 0, audioMids = 0, audioHighs = 0, audioKick = 0, lastBass = 0;
 
       window.onYouTubeIframeAPIReady = () => {
         player = new YT.Player('yt-player', {
@@ -282,6 +290,7 @@
             'onStateChange': (e) => {
                if (e.data === YT.PlayerState.PLAYING) {
                  isPlaying = true;
+                 document.body.classList.remove('is-settling');
                  document.body.classList.add('is-playing');
                  document.querySelector('.icon-play').style.display = 'none';
                  document.querySelector('.icon-pause').style.display = 'block';
@@ -290,6 +299,7 @@
                } else {
                  isPlaying = false;
                  document.body.classList.remove('is-playing');
+                 document.body.classList.add('is-settling');
                  document.querySelector('.icon-play').style.display = 'block';
                  document.querySelector('.icon-pause').style.display = 'none';
                  document.getElementById('audio-credit').classList.remove('visible');
@@ -304,7 +314,6 @@
         if (isPlaying) player.pauseVideo();
         else player.playVideo();
       });
-      // ---------------------------
 
       const canvas = document.getElementById('resonance-field');
       const ctx = canvas.getContext('2d', { alpha: true });
@@ -335,7 +344,6 @@
         }
       };
 
-      // Guaranteed robust loop restarter
       const wakePhysics = () => {
         isSleeping = false;
         if (!animationFrameId) {
@@ -356,12 +364,17 @@
           if (frameIndex < trackData.length) {
             let frame = trackData[frameIndex];
             
-            // MATH-DRIVEN GLOW: Instant Attack, Smooth Decay
-            if (frame.b > audioBass) audioBass = frame.b; else audioBass += (frame.b - audioBass) * 0.12;
-            if (frame.m > audioMids) audioMids = frame.m; else audioMids += (frame.m - audioMids) * 0.10;
-            if (frame.h > audioHighs) audioHighs = frame.h; else audioHighs += (frame.h - audioHighs) * 0.15;
+            // 1. EQUALIZER MATH: Smooth sustained base
+            if (frame.b > audioBass) audioBass = frame.b; else audioBass += (frame.b - audioBass) * 0.03; // Very slow decay
+            audioMids += (frame.m - audioMids) * 0.15;
+            audioHighs += (frame.h - audioHighs) * 0.15;
+
+            // 2. THE KICK DRUM GATE: Math-driven sharp isolation
+            let kickThreshold = Math.pow(frame.b, 3) * 1.5;
+            if (kickThreshold > audioKick) audioKick = kickThreshold; else audioKick += (0 - audioKick) * 0.1; // Fast pulse
 
             document.documentElement.style.setProperty('--audio-bass', audioBass);
+            document.documentElement.style.setProperty('--audio-kick', audioKick);
             
             // Live Equalizer
             const barB = document.getElementById('bar-b');
@@ -371,81 +384,86 @@
             if(barM) barM.style.height = Math.max(4, audioMids * 18) + 'px';
             if(barH) barH.style.height = Math.max(4, audioHighs * 18) + 'px';
 
-            // 1. DYNAMIC COLOR INJECTION
+            // 3. COLOR INJECTION & CAMERA SHAKE
             let targetR = tR, targetG = tG, targetB = tB;
-            if (audioBass > 0.6) {
-              let mix = (audioBass - 0.6) * 2.5; 
-              if (mix > 1) mix = 1;
+            if (audioKick > 0.4) {
+              let mix = Math.min(1, (audioKick - 0.4) * 2.0); 
               targetR = tR + (243 - tR) * mix;
               targetG = tG + (101 - tG) * mix;
               targetB = tB + (35 - tB) * mix;
-            }
-            cR += (targetR - cR) * 0.1;
-            cG += (targetG - cG) * 0.1;
-            cB += (targetB - cB) * 0.1;
-
-            // 2. DYNAMIC TENSION & CAMERA SHAKE
-            currentTension = baseTension + (audioBass * 0.04);
-            currentDamping = baseDamping - (audioHighs * 0.03); 
-            
-            if (audioBass > 0.8) {
-              let shakeIntensity = (audioBass - 0.8) * 15;
+              
+              let shakeIntensity = mix * 10;
               document.documentElement.style.setProperty('--shake-x', (Math.random() - 0.5) * shakeIntensity + 'px');
               document.documentElement.style.setProperty('--shake-y', (Math.random() - 0.5) * shakeIntensity + 'px');
             } else {
               document.documentElement.style.setProperty('--shake-x', '0px');
               document.documentElement.style.setProperty('--shake-y', '0px');
             }
+            cR += (targetR - cR) * 0.1; cG += (targetG - cG) * 0.1; cB += (targetB - cB) * 0.1;
 
-            // 3. THE STRINGS AGITATION
+            // 4. THE STRINGS AGITATION
             let centerStr = Math.floor(strings.length / 2);
             let bassHit = frame.b > 0.65 && (frame.b - lastBass > 0.08); 
             lastBass = frame.b;
+            
+            currentTension = baseTension + (audioBass * 0.04);
+            currentDamping = baseDamping - (audioHighs * 0.03); 
 
-            // Orchestral / Violin Bowing logic for calm intro
-            let energy = (audioBass + audioMids + audioHighs) / 3;
-            let calmMultiplier = energy < 0.2 ? (2.0 - (energy*10)) : 1;
-            let bowWave = Math.sin(currentTime * 3) * audioMids * calmMultiplier * 1.2;
+            // VIOLIN BOW (Sweeping Sine Waves during calm parts)
+            let swayActive = Math.max(0, 1 - (audioBass / 0.6)); // Stays active during low-bass violin intro
+            let wavePhase = currentTime * 3.0;
 
             for (let i = 0; i < strings.length; i++) {
               let pts = strings[i].points;
               let midPt = Math.floor(pts.length / 2);
               let distRatio = Math.abs(i - centerStr) / centerStr;
 
-              // Violin Wind 
-              for (let p = 1; p < pts.length - 1; p++) {
-                if (Math.random() > 0.5) pts[p].vy += bowWave * 0.05 * (p / pts.length);
+              // Violin Ocean Waves
+              if (swayActive > 0) {
+                let stringPhase = (i / NUM_STRINGS) * Math.PI * 4; 
+                let bowForce = Math.sin(wavePhase + stringPhase) * (audioMids + audioHighs) * swayActive * 8.0; // Amplified
+                for (let p = 1; p < pts.length - 1; p++) {
+                  let bell = Math.sin((p / (pts.length - 1)) * Math.PI); 
+                  pts[p].vy += bowForce * bell * 0.8;
+                }
               }
 
               // Kick Drum Shockwave
               if (bassHit) {
                 let direction = (i < centerStr) ? -1 : 1;
                 if (i === centerStr) direction = Math.random() > 0.5 ? 1 : -1;
-                let force = (1 - distRatio) * frame.b * 8.0; 
+                let force = (1 - distRatio) * frame.b * 10.0; 
                 pts[midPt].vy += force * direction;
               }
 
               // Synth Ripple
-              if (frame.m > 0.4 && Math.random() > 0.8) {
-                pts[midPt].vy += frame.m * 2.5 * (Math.random() > 0.5 ? 1 : -1);
+              if (audioBass > 0.3 && frame.m > 0.4 && Math.random() > 0.8) {
+                pts[midPt].vy += frame.m * 3.5 * (Math.random() > 0.5 ? 1 : -1);
               }
-
               // Hi-Hats Scatter
-              if (frame.h > 0.3 && distRatio > 0.5 && Math.random() > 0.7) {
-                pts[midPt].vy += frame.h * 3.0 * (Math.random() > 0.5 ? 1 : -1);
+              if (audioBass > 0.3 && frame.h > 0.3 && distRatio > 0.5 && Math.random() > 0.7) {
+                pts[midPt].vy += frame.h * 4.0 * (Math.random() > 0.5 ? 1 : -1);
               }
             }
           }
         } else if (!isPlaying) {
-          audioBass += (0 - audioBass) * 0.2;
-          audioMids += (0 - audioMids) * 0.1;
-          audioHighs += (0 - audioHighs) * 0.1;
+          // Graceful decay when paused
+          audioBass += (0 - audioBass) * 0.02; // Glides smoothly to 0
+          audioKick += (0 - audioKick) * 0.08;
+          audioMids += (0 - audioMids) * 0.05;
+          audioHighs += (0 - audioHighs) * 0.05;
           document.documentElement.style.setProperty('--audio-bass', audioBass);
+          document.documentElement.style.setProperty('--audio-kick', audioKick);
           document.documentElement.style.setProperty('--shake-x', '0px');
           document.documentElement.style.setProperty('--shake-y', '0px');
-          currentTension = baseTension;
-          currentDamping = baseDamping;
           cR += (tR - cR) * 0.05; cG += (tG - cG) * 0.05; cB += (tB - cB) * 0.05;
+          currentTension = baseTension; currentDamping = baseDamping;
+          
+          // Re-engage base animations seamlessly when fully settled
+          if (audioBass < 0.01 && document.body.classList.contains('is-settling')) {
+            document.body.classList.remove('is-settling');
+            audioBass = 0; audioKick = 0;
+          }
         }
         // ---------------------------------------------
 
@@ -486,7 +504,6 @@
       const render = () => {
         ctx.clearRect(0, 0, width, height);
         
-        // Dynamic opacity based on Bass
         let alpha = 0.08 + (audioBass * 0.15);
         let lw = 1.5 + (audioBass * 2.0);
         
@@ -509,7 +526,7 @@
 
       const animate = (time) => {
         if (!isVisible || isSleeping) {
-          animationFrameId = null; // Important for hard restarts
+          animationFrameId = null; 
           return;
         }
         let dt = time - lastTime;
@@ -547,11 +564,11 @@
       window.addEventListener('touchcancel', clearMouse);
       window.addEventListener('resize', () => { clearTimeout(resizeTimeout); resizeTimeout = setTimeout(resize, 150); });
       
-      // FIX Tab-switch freezing definitively 
+      // Absolute fix for Android freezing:
       document.addEventListener('visibilitychange', () => {
         isVisible = document.visibilityState === 'visible';
         if (isVisible) {
-          wakePhysics(); // Re-ignites the physics engine immediately
+          wakePhysics(); 
         } else {
           if (animationFrameId) {
             cancelAnimationFrame(animationFrameId);
@@ -567,7 +584,7 @@
       });
 
       resize();
-      wakePhysics(); // Start the loop immediately
+      wakePhysics(); 
 
       const startApp = () => {
         document.body.classList.add('ready');
