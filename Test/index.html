@@ -6,14 +6,13 @@
 <meta name="color-scheme" content="dark light">
 <meta name="theme-color" id="meta-theme-color" content="#000000">
 <meta name="robots" content="noindex">
-<title>Rssonate | The Spectacle</title>
+<title>Rssonate | Echoes of History</title>
 <link rel="icon" type="image/svg+xml" href="../icon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;600&family=Instrument+Serif:ital@1&display=swap">
-<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;600&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet">
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;600;800&family=Instrument+Serif:ital@1&display=swap">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;600;800&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet">
 
-<!-- Load your baked audio data -->
 <script src="track-data.js"></script>
 
 <script>
@@ -40,9 +39,9 @@
     --theme-ease: cubic-bezier(0.25, 1, 0.5, 1);
     --theme-duration: 2.2s;
     
-    /* Dynamic Audio Variables */
-    --audio-bass: 0;
-    --audio-kick: 0;
+    /* Perfected Audio Variables */
+    --audio-breathe: 0;
+    --audio-pulse: 0;
     --shake-x: 0px;
     --shake-y: 0px;
   }
@@ -65,12 +64,10 @@
     background: var(--bg); color: var(--text-primary);
     font-family: 'Geist', -apple-system, BlinkMacSystemFont, sans-serif;
     -webkit-font-smoothing: antialiased; 
-    overscroll-behavior: none; 
-    overflow: hidden; 
+    overscroll-behavior: none; overflow: hidden; 
     transition: background-color var(--theme-duration) var(--theme-ease), color var(--theme-duration) var(--theme-ease);
   }
 
-  /* Fixed Mobile Swiping & Freezing */
   #resonance-field { position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh; z-index: 1; opacity: 0; transition: opacity 3s var(--theme-ease); will-change: transform; touch-action: none; }
   body.ready #resonance-field { opacity: 1; }
   
@@ -78,11 +75,9 @@
   
   main { position: relative; z-index: 10; width: 100%; height: 100dvh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 0 5vw; pointer-events: none; will-change: transform; }
 
-  /* Apply Parallax Camera Shake ONLY to main content and strings (Fixes Scrollbars) */
+  /* Camera Shake on main content */
   body.is-playing #resonance-field,
-  body.is-playing main { 
-    transform: translate(var(--shake-x), var(--shake-y)); 
-  }
+  body.is-playing main { transform: translate(var(--shake-x), var(--shake-y)); }
   
   /* The Melting Typography */
   .fade-ui { transition: opacity 0.8s var(--theme-ease), transform 0.8s var(--theme-ease); will-change: opacity, transform; }
@@ -90,13 +85,11 @@
   
   .text-glow { text-shadow: var(--glow-shadow); transition: text-shadow var(--theme-duration) var(--theme-ease), color var(--theme-duration) var(--theme-ease); }
   
-  /* Controls */
   .theme-toggle, .audio-toggle {
     position: fixed; top: clamp(1.5rem, 4vh, 2.5rem); z-index: 20;
     background: transparent; border: none; color: var(--text-secondary);
     cursor: pointer; padding: 0.75rem; display: flex; align-items: center; justify-content: center;
-    transition: color 0.4s ease, transform 0.4s var(--theme-ease); opacity: 0;
-    pointer-events: auto;
+    transition: color 0.4s ease, transform 0.4s var(--theme-ease); opacity: 0; pointer-events: auto;
   }
   .theme-toggle { right: clamp(1.5rem, 4vw, 2.5rem); }
   .audio-toggle { right: calc(clamp(1.5rem, 4vw, 2.5rem) + 3.2rem); pointer-events: none; }
@@ -105,7 +98,6 @@
   [data-theme="dark"] .icon-moon { display: none; }
   [data-theme="light"] .icon-sun { display: none; }
 
-  /* Premium Glassmorphic Credit */
   .audio-credit {
     position: fixed; bottom: max(2.5rem, env(safe-area-inset-bottom)); right: clamp(1.5rem, 4vw, 2.5rem); z-index: 20;
     display: flex; align-items: center; gap: 14px;
@@ -121,7 +113,6 @@
   .audio-bars { display: flex; gap: 3px; align-items: flex-end; height: 18px; padding-bottom: 2px; }
   .audio-bars span { width: 3px; background: var(--accent); border-radius: 3px; height: 4px; transition: height 0.05s linear; will-change: height; }
 
-  /* Base Logo Styling */
   .logo-wrapper, h1, p.sub, .status-badge { opacity: 0; }
   
   .logo { 
@@ -150,7 +141,7 @@
     animation: ambientResonance 6s ease-in-out 1.8s infinite alternate;
   }
   
-  /* --- THE SPECTACLE ALIGNMENT & DUAL-STAGE MATH GATING --- */
+  /* --- THE DUAL-LAYERED AUDIO ALGORITHM FOR LOGO --- */
   body.is-playing .logo {
     transform: translateY(15vh) scale(1.3);
   }
@@ -159,20 +150,19 @@
   body.is-settling .logo-icon::before {
     animation: none !important; 
     transition: transform 0.05s linear, opacity 0.05s linear !important;
-    /* Bass sustains the size slowly, Kick provides the sharp spikes */
-    transform: scale(calc(1.0 + var(--audio-bass) * 0.5 + var(--audio-kick) * 0.4));
-    opacity: calc(0.6 + var(--audio-bass) * 0.3 + var(--audio-kick) * 0.4);
+    /* 'Breathe' handles the slow violin sweeps, 'Pulse' is the sharp kick drum */
+    transform: scale(calc(1.0 + var(--audio-breathe) * 0.3 + var(--audio-pulse) * 0.6));
+    opacity: calc(0.1 + var(--audio-breathe) * 0.4 + var(--audio-pulse) * 0.8);
   }
   
   body.is-playing .logo img,
   body.is-settling .logo img {
     animation: none !important; 
     transition: transform 0.05s linear, filter 0.05s linear !important;
-    transform: scale(calc(1.0 + var(--audio-bass) * 0.1 + var(--audio-kick) * 0.15));
-    filter: drop-shadow(0 calc(4px + var(--audio-kick)*16px) calc(24px + var(--audio-bass)*32px + var(--audio-kick)*32px) rgba(243, 101, 35, calc(0.15 + var(--audio-bass)*0.5 + var(--audio-kick)*0.35))) 
-            drop-shadow(0 0 calc(8px + var(--audio-kick)*20px) rgba(255, 200, 67, calc(0.05 + var(--audio-bass)*0.3 + var(--audio-kick)*0.2)));
+    transform: scale(calc(1.0 + var(--audio-breathe) * 0.05 + var(--audio-pulse) * 0.15));
+    filter: drop-shadow(0 calc(4px + var(--audio-pulse)*16px) calc(24px + var(--audio-breathe)*20px + var(--audio-pulse)*40px) rgba(243, 101, 35, calc(0.15 + var(--audio-breathe)*0.3 + var(--audio-pulse)*0.7))) 
+            drop-shadow(0 0 calc(8px + var(--audio-pulse)*20px) rgba(255, 200, 67, calc(0.05 + var(--audio-pulse)*0.4)));
   }
-  /* ------------------------------------------ */
 
   .logo span { color: var(--accent); transition: color var(--theme-duration) var(--theme-ease); }
   h1 { font-weight: 300; font-size: clamp(2.5rem, 7vw, 6.5rem); line-height: 1.05; letter-spacing: -0.04em; margin: 0 0 clamp(1.25rem, 3vh, 2rem) 0; }
@@ -193,7 +183,6 @@
 </style>
 </head>
 <body>
-  <!-- Hidden YouTube Player -->
   <div id="yt-player" style="display: none;"></div>
 
   <button id="audio-toggle" class="audio-toggle" aria-label="Play Track">
@@ -250,10 +239,11 @@
       const metaThemeColor = document.getElementById('meta-theme-color');
       
       let tR = 255, tG = 250, tB = 245, cR = 255, cG = 250, cB = 245;
+      let isDarkTheme = true;
 
       const applyThemeVars = (theme) => {
-        const isDark = theme === 'dark';
-        tR = isDark ? 255 : 0; tG = isDark ? 250 : 0; tB = isDark ? 245 : 0;
+        isDarkTheme = theme === 'dark';
+        tR = isDarkTheme ? 255 : 0; tG = isDarkTheme ? 250 : 0; tB = isDarkTheme ? 245 : 0;
       };
 
       const setTheme = (theme) => {
@@ -276,7 +266,11 @@
       document.head.appendChild(ytScript);
 
       let player, isPlaying = false, ytReady = false;
-      let audioBass = 0, audioMids = 0, audioHighs = 0, audioKick = 0, lastBass = 0;
+      let audioBass = 0, audioMids = 0, audioHighs = 0;
+      
+      // Smart Variables for interpretation
+      let smoothBreathe = 0, beatPulse = 0;
+      let bassHistory = new Array(20).fill(0); // For Transient Detection
 
       window.onYouTubeIframeAPIReady = () => {
         player = new YT.Player('yt-player', {
@@ -315,6 +309,66 @@
         else player.playVideo();
       });
 
+      // --- The Echoes of History (News Data Stream) ---
+      const headlines = [
+        "Aug 6, 1991: The World Wide Web Goes Live",
+        "Jul 20, 1969: Apollo 11 Lands on the Moon",
+        "Nov 9, 1989: The Berlin Wall Falls",
+        "Jan 9, 2007: Apple Introduces the iPhone",
+        "May 6, 1994: The Channel Tunnel Opens",
+        "Feb 14, 2005: YouTube is Launched",
+        "May 11, 1997: Deep Blue Defeats Kasparov",
+        "Jul 4, 1997: Pathfinder Lands on Mars",
+        "Oct 4, 1957: Sputnik 1 Launched",
+        "Feb 4, 2004: Facebook Founded",
+        "Oct 24, 2003: Concorde Makes Final Flight",
+        "Dec 2, 1982: First Artificial Heart Transplant"
+      ];
+      let echoes = [];
+      let lastEchoTime = 0;
+
+      class EchoParticle {
+        constructor(text, startY) {
+          this.text = text;
+          this.x = width / 2;
+          this.y = startY;
+          this.z = 0.01; // Depth (0.0 to 1.0)
+          this.speed = Math.random() * 0.001 + 0.0005;
+          this.offset = (Math.random() - 0.5) * width; // Horizontal drift
+        }
+        update(warpSpeed) {
+          this.z += this.speed * (1 + warpSpeed * 10);
+          return this.z >= 1.0; // returns true if it passed the camera
+        }
+        draw(ctx, energy, isDark) {
+          if (this.z < 0.05) return;
+          let scale = this.z * 4;
+          let alpha = (this.z < 0.2) ? (this.z / 0.2) : (1 - this.z); // Fade in and out
+          
+          let drawX = (width / 2) + (this.offset * this.z);
+          let drawY = (height / 2) + ((this.y - height / 2) * this.z * 2);
+
+          ctx.save();
+          ctx.translate(drawX, drawY);
+          ctx.scale(scale, scale);
+          
+          // Color shifts to Orange on high energy
+          let r = isDark ? 255 : 0; let g = isDark ? 255 : 0; let b = isDark ? 255 : 0;
+          if (energy > 0.5) {
+            let mix = (energy - 0.5) * 2;
+            r = r + (243 - r) * mix; g = g + (101 - g) * mix; b = b + (35 - b) * mix;
+          }
+          
+          ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${alpha * 0.4})`;
+          ctx.font = "800 12px 'Geist'";
+          ctx.textAlign = "center";
+          ctx.textBaseline = "middle";
+          ctx.fillText(this.text, 0, 0);
+          ctx.restore();
+        }
+      }
+
+      // --- Canvas Physics Engine ---
       const canvas = document.getElementById('resonance-field');
       const ctx = canvas.getContext('2d', { alpha: true });
 
@@ -356,7 +410,6 @@
       const updatePhysics = () => {
         let maxV = 0;
 
-        // --- PRE-BAKED AUDIO SPECTACLE INJECTION ---
         if (isPlaying && ytReady && typeof trackData !== 'undefined' && trackData.length > 0) {
           let currentTime = player.getCurrentTime();
           let frameIndex = Math.floor(currentTime * 20); 
@@ -364,35 +417,41 @@
           if (frameIndex < trackData.length) {
             let frame = trackData[frameIndex];
             
-            // 1. EQUALIZER MATH: Smooth sustained base
-            if (frame.b > audioBass) audioBass = frame.b; else audioBass += (frame.b - audioBass) * 0.03; // Very slow decay
-            audioMids += (frame.m - audioMids) * 0.15;
-            audioHighs += (frame.h - audioHighs) * 0.15;
+            // 1. EQUALIZER MATH
+            audioBass += (frame.b - audioBass) * 0.2;
+            audioMids += (frame.m - audioMids) * 0.2;
+            audioHighs += (frame.h - audioHighs) * 0.2;
 
-            // 2. THE KICK DRUM GATE: Math-driven sharp isolation
-            let kickThreshold = Math.pow(frame.b, 3) * 1.5;
-            if (kickThreshold > audioKick) audioKick = kickThreshold; else audioKick += (0 - audioKick) * 0.1; // Fast pulse
+            // 2. THE NEW BEAT DETECTOR (Resolves jittering)
+            bassHistory.push(frame.b);
+            bassHistory.shift();
+            let bassAvg = bassHistory.reduce((a, b) => a + b, 0) / bassHistory.length;
+            
+            // Detect sharp transient (Kick Drum)
+            if (frame.b > bassAvg * 1.3 && frame.b > 0.4) {
+              beatPulse = 1.0; 
+            }
+            beatPulse *= 0.85; // Fast decay for sharp snap
 
-            document.documentElement.style.setProperty('--audio-bass', audioBass);
-            document.documentElement.style.setProperty('--audio-kick', audioKick);
+            // Majestic, slow breathing for violin
+            smoothBreathe += (frame.m - smoothBreathe) * 0.05; 
+
+            document.documentElement.style.setProperty('--audio-breathe', smoothBreathe);
+            document.documentElement.style.setProperty('--audio-pulse', beatPulse);
             
             // Live Equalizer
-            const barB = document.getElementById('bar-b');
-            const barM = document.getElementById('bar-m');
-            const barH = document.getElementById('bar-h');
+            const barB = document.getElementById('bar-b'); const barM = document.getElementById('bar-m'); const barH = document.getElementById('bar-h');
             if(barB) barB.style.height = Math.max(4, audioBass * 18) + 'px';
             if(barM) barM.style.height = Math.max(4, audioMids * 18) + 'px';
             if(barH) barH.style.height = Math.max(4, audioHighs * 18) + 'px';
 
-            // 3. COLOR INJECTION & CAMERA SHAKE
+            // 3. COLOR & SHAKE
             let targetR = tR, targetG = tG, targetB = tB;
-            if (audioKick > 0.4) {
-              let mix = Math.min(1, (audioKick - 0.4) * 2.0); 
-              targetR = tR + (243 - tR) * mix;
-              targetG = tG + (101 - tG) * mix;
-              targetB = tB + (35 - tB) * mix;
+            if (audioBass > 0.7) {
+              let mix = Math.min(1, (audioBass - 0.7) * 3.0); 
+              targetR = tR + (243 - tR) * mix; targetG = tG + (101 - tG) * mix; targetB = tB + (35 - tB) * mix;
               
-              let shakeIntensity = mix * 10;
+              let shakeIntensity = mix * 8;
               document.documentElement.style.setProperty('--shake-x', (Math.random() - 0.5) * shakeIntensity + 'px');
               document.documentElement.style.setProperty('--shake-y', (Math.random() - 0.5) * shakeIntensity + 'px');
             } else {
@@ -401,72 +460,80 @@
             }
             cR += (targetR - cR) * 0.1; cG += (targetG - cG) * 0.1; cB += (targetB - cB) * 0.1;
 
-            // 4. THE STRINGS AGITATION
+            // 4. STRINGS & ECHOES LOGIC
             let centerStr = Math.floor(strings.length / 2);
-            let bassHit = frame.b > 0.65 && (frame.b - lastBass > 0.08); 
-            lastBass = frame.b;
-            
-            currentTension = baseTension + (audioBass * 0.04);
-            currentDamping = baseDamping - (audioHighs * 0.03); 
+            currentTension = baseTension + (audioBass * 0.06);
+            currentDamping = baseDamping - (audioHighs * 0.04); 
 
-            // VIOLIN BOW (Sweeping Sine Waves during calm parts)
-            let swayActive = Math.max(0, 1 - (audioBass / 0.6)); // Stays active during low-bass violin intro
-            let wavePhase = currentTime * 3.0;
+            // Spawn Echoes
+            let energy = (audioBass + audioMids + audioHighs) / 3;
+            let spawnRate = energy < 0.3 ? 2.0 : 0.5; // Seconds between spawns
+            if (currentTime - lastEchoTime > spawnRate && echoes.length < 15) {
+              let randomText = headlines[Math.floor(Math.random() * headlines.length)];
+              // Don't spawn exactly in the center to avoid covering the logo entirely
+              let startY = height/2 + (Math.random() > 0.5 ? 1 : -1) * (Math.random() * height * 0.3 + 100);
+              echoes.push(new EchoParticle(randomText, startY));
+              lastEchoTime = currentTime;
+            }
+
+            // Violin Bowing (Massive Sine Waves during quiet parts)
+            let swayActive = Math.max(0, 1 - (audioBass / 0.5)); 
+            let wavePhase = currentTime * 1.5;
 
             for (let i = 0; i < strings.length; i++) {
               let pts = strings[i].points;
               let midPt = Math.floor(pts.length / 2);
               let distRatio = Math.abs(i - centerStr) / centerStr;
 
-              // Violin Ocean Waves
+              // Gentle Violin Waves
               if (swayActive > 0) {
-                let stringPhase = (i / NUM_STRINGS) * Math.PI * 4; 
-                let bowForce = Math.sin(wavePhase + stringPhase) * (audioMids + audioHighs) * swayActive * 8.0; // Amplified
+                let stringPhase = (i / NUM_STRINGS) * Math.PI * 2.0; 
+                let bowForce = Math.sin(wavePhase + stringPhase) * smoothBreathe * swayActive * 12.0; 
                 for (let p = 1; p < pts.length - 1; p++) {
                   let bell = Math.sin((p / (pts.length - 1)) * Math.PI); 
-                  pts[p].vy += bowForce * bell * 0.8;
+                  pts[p].vy += bowForce * bell * 0.5;
                 }
               }
 
-              // Kick Drum Shockwave
-              if (bassHit) {
+              // Kick Drum Shatter
+              if (beatPulse > 0.8) {
                 let direction = (i < centerStr) ? -1 : 1;
                 if (i === centerStr) direction = Math.random() > 0.5 ? 1 : -1;
-                let force = (1 - distRatio) * frame.b * 10.0; 
+                let force = (1 - distRatio) * beatPulse * 12.0; 
                 pts[midPt].vy += force * direction;
               }
 
-              // Synth Ripple
+              // Synth Chaos
               if (audioBass > 0.3 && frame.m > 0.4 && Math.random() > 0.8) {
-                pts[midPt].vy += frame.m * 3.5 * (Math.random() > 0.5 ? 1 : -1);
-              }
-              // Hi-Hats Scatter
-              if (audioBass > 0.3 && frame.h > 0.3 && distRatio > 0.5 && Math.random() > 0.7) {
-                pts[midPt].vy += frame.h * 4.0 * (Math.random() > 0.5 ? 1 : -1);
+                pts[midPt].vy += frame.m * 4.0 * (Math.random() > 0.5 ? 1 : -1);
               }
             }
           }
         } else if (!isPlaying) {
-          // Graceful decay when paused
-          audioBass += (0 - audioBass) * 0.02; // Glides smoothly to 0
-          audioKick += (0 - audioKick) * 0.08;
-          audioMids += (0 - audioMids) * 0.05;
-          audioHighs += (0 - audioHighs) * 0.05;
-          document.documentElement.style.setProperty('--audio-bass', audioBass);
-          document.documentElement.style.setProperty('--audio-kick', audioKick);
+          audioBass += (0 - audioBass) * 0.05; 
+          beatPulse *= 0.8; smoothBreathe *= 0.95;
+          audioMids += (0 - audioMids) * 0.05; audioHighs += (0 - audioHighs) * 0.05;
+          document.documentElement.style.setProperty('--audio-breathe', smoothBreathe);
+          document.documentElement.style.setProperty('--audio-pulse', beatPulse);
           document.documentElement.style.setProperty('--shake-x', '0px');
           document.documentElement.style.setProperty('--shake-y', '0px');
           cR += (tR - cR) * 0.05; cG += (tG - cG) * 0.05; cB += (tB - cB) * 0.05;
           currentTension = baseTension; currentDamping = baseDamping;
           
-          // Re-engage base animations seamlessly when fully settled
           if (audioBass < 0.01 && document.body.classList.contains('is-settling')) {
             document.body.classList.remove('is-settling');
-            audioBass = 0; audioKick = 0;
+            audioBass = 0; beatPulse = 0; smoothBreathe = 0;
+            echoes = []; // Clear history text
           }
         }
-        // ---------------------------------------------
 
+        // Echoes Update
+        let warpSpeed = isPlaying ? audioBass : 0;
+        for (let i = echoes.length - 1; i >= 0; i--) {
+          if (echoes[i].update(warpSpeed)) echoes.splice(i, 1);
+        }
+
+        // Mouse Physics
         for (let i = 0; i < strings.length; i++) {
           const pts = strings[i].points;
           for (let j = 0; j < pts.length; j++) {
@@ -504,8 +571,9 @@
       const render = () => {
         ctx.clearRect(0, 0, width, height);
         
-        let alpha = 0.08 + (audioBass * 0.15);
-        let lw = 1.5 + (audioBass * 2.0);
+        // Render Strings
+        let alpha = 0.08 + (audioBass * 0.2);
+        let lw = 1.5 + (beatPulse * 2.0);
         
         ctx.strokeStyle = `rgba(${Math.round(cR)}, ${Math.round(cG)}, ${Math.round(cB)}, ${alpha})`;
         ctx.lineWidth = lw;
@@ -519,6 +587,11 @@
           }
           ctx.lineTo(pts[pts.length - 1].x, pts[pts.length - 1].y);
           ctx.stroke();
+        }
+
+        // Render Echoes of History
+        for (let i = 0; i < echoes.length; i++) {
+          echoes[i].draw(ctx, audioBass, isDarkTheme);
         }
       };
 
@@ -564,16 +637,12 @@
       window.addEventListener('touchcancel', clearMouse);
       window.addEventListener('resize', () => { clearTimeout(resizeTimeout); resizeTimeout = setTimeout(resize, 150); });
       
-      // Absolute fix for Android freezing:
       document.addEventListener('visibilitychange', () => {
         isVisible = document.visibilityState === 'visible';
         if (isVisible) {
           wakePhysics(); 
         } else {
-          if (animationFrameId) {
-            cancelAnimationFrame(animationFrameId);
-            animationFrameId = null;
-          }
+          if (animationFrameId) { cancelAnimationFrame(animationFrameId); animationFrameId = null; }
         }
       });
 
@@ -604,4 +673,4 @@
     })();
   </script>
 </body>
-  </html>
+</html>
